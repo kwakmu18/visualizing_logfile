@@ -1,0 +1,825 @@
+[INFO: CNLAB_AP  ] Node 1 run as Coordinator
+[INFO: CNLAB     ] cnlab_measure_link_process: Current ASN=8 sf_size=101 sf_length=1010 
+[INFO: CNLAB     ] cnlab_measure_link_process: WAITING FOR ALL NODES JOIN THE NETWORK at ASN = 8
+[INFO: CNLAB     ] cnlab_measure_link_process: END OF SEND EB at ASN = 2525
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=2 level=1 seqno=1 RSSI=-60 at ASN=2743 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=3 level=1 seqno=1 RSSI=-46 at ASN=2751 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=4 level=1 seqno=1 RSSI=-65 at ASN=2759 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=5 level=1 seqno=1 RSSI=-48 at ASN=2767 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=6 level=1 seqno=1 RSSI=-55 at ASN=2775 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=7 level=1 seqno=1 RSSI=-51 at ASN=2783 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=8 level=1 seqno=1 RSSI=-60 at ASN=2791 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=9 level=1 seqno=1 RSSI=-55 at ASN=2799 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=10 level=1 seqno=1 RSSI=-55 at ASN=2807 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=11 level=1 seqno=1 RSSI=-61 at ASN=2815 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=12 level=1 seqno=1 RSSI=-73 at ASN=2828 
+[INFO: CNLAB     ] cnlab_measure_link_process: all PROBE_PRR packets sent: at ASN = 42832
+[INFO: CNLAB     ] cnlab_prr_timer_callback: node(1) degree=(11) after receiving all PROBE msg 
+[INFO: CNLAB     ] cnlab_measure_link_process: node.degree=(11) after selection 
+[P]:1:11:(2,9499):(3,9999):(4,8399):(5,9999):(6,9499):(7,9949):(8,9399):(9,9399):(10,9649):(11,9499):(12,8149)
+[INFO: CNLAB     ] cnlab_prr_msg_output_callback: estimate_ASN_DATA_SF=(64547)
+[INFO: CNLAB     ] cnlab_prr_msg_output_callback: node=(1) degree=(8) after deleting links with lower PRR 
+[INFO: CNLAB     ] cnlab_prr_msg_output_callback: set cnlab_TC_timeout_callback TO at ASN=(44246) TO=(10100)
+[INFO: CNLAB     ] cnlab_prr_msg_output_callback: AP node starting TC-step at ASN 44246
+[INFO: CNLAB     ] cnlab_TC_output_callback: TC_PACKET sent: node=(1) level=(0) rank=(9999) pid=(0) at ASN=(44347) 
+[INFO: CNLAB     ] -----cnlab_TC_timeout_callback: set cnlab_NI_step_timeout_callback TO at ASN = 54346
+[INFO: CNLAB     ] ----- cnlab_NI_step_timeout_callback TO = (10100) 
+[N]:(1,1,0,9999,0):8:(2,1,9499,9699):(3,1,9999,9799):(5,1,9999,9749):(6,1,9499,9699):(7,1,9949,9699):(8,1,9399,9449):(9,1,9399,9649):(11,1,9499,9699)
+[+]:(3,4,1,9999,1):9:(1,0,9799,9999):(2,1,9299,9549):(4,1,8799,9949):(6,1,9199,9499):(7,1,9549,9599):(8,1,9299,9449):(11,1,9399,9499):(12,1,9499,9949):(5,1,9749,9999)
+[+]:(5,4,1,9999,1):9:(1,0,9749,9999):(2,1,8999,9399):(3,1,9999,9749):(4,1,8799,9999):(6,1,9499,9699):(7,1,9599,9749):(8,1,9549,9649):(11,1,9499,9549):(12,1,9499,9899)
+[+]:(6,2,1,9499,1):9:(1,0,9699,9499):(2,1,9549,9999):(3,1,9499,9199):(4,1,8649,9549):(7,1,9549,9449):(8,1,9499,9499):(11,1,9499,9399):(12,1,9449,9799):(5,1,9699,9499)
+[+]:(7,2,1,9949,1):6:(1,0,9699,9949):(2,1,9899,9799):(3,1,9599,9549):(6,1,9449,9549):(11,1,9599,9599):(5,1,9749,9599)
+[+]:(8,2,1,9399,1):7:(1,0,9449,9399):(2,1,9549,9399):(3,1,9449,9299):(6,1,9499,9499):(11,1,9549,9349):(12,1,9449,9899):(5,1,9649,9549)
+[+]:(11,2,1,9499,1):9:(1,0,9699,9499):(2,1,9899,9549):(3,1,9499,9399):(4,1,9199,9899):(6,1,9399,9499):(7,1,9599,9599):(8,1,9349,9549):(12,1,9999,9999):(5,1,9549,9499)
+[+]:(2,4,1,9499,1):9:(1,0,9699,9499):(3,1,9549,9299):(4,1,9049,9899):(6,1,9999,9549):(7,1,9799,9899):(8,1,9399,9549):(11,1,9549,9899):(12,1,9199,9449):(5,1,9399,8999)
+[+]:(4,4,2,8799,3):6:(2,1,9899,9049):(3,1,9949,8799):(5,1,9999,8799):(6,1,9549,8649):(11,1,9899,9199):(12,1,9449,8599):3:1
+[+]:(12,3,2,9499,3):9:(2,1,9449,9199):(3,1,9949,9499):(4,1,8599,9449):(5,1,9899,9499):(6,1,9799,9449):(8,1,9899,9449):(9,1,9849,9349):(10,1,9949,9349):(11,1,9999,9999):3:1
+[+]:(9,2,1,9399,1):9:(1,0,9649,9399):(2,1,9499,9349):(3,1,8799,8899):(6,1,8849,9299):(7,1,9249,9499):(10,1,9999,9999):(11,1,8999,9349):(12,1,9349,9849):(5,1,9649,9499)
+[+]:(10,2,2,9699,3):6:(3,1,9249,9699):(5,1,9199,9699):(6,1,8649,9199):(7,1,8999,9699):(11,1,8899,9649):(12,1,9349,9949):3:1
+[Y]: node=(1): ===END-OF-NI=== at ASN=(54564)
+
+[INFO: CNLAB     ] cnlab_NI_step_timeout_callback: NI_info STEP finished: at ASN = 64454
+[INFO: CNLAB     ] cnlab_reliable_sched_start: Node=(1): at ASN = 64462
+[INFO: CNLAB     ] cnlab_reliable_sched_start: SF_DATA_RELIABLE_SIZE=(281)
+[INFO: CNLAB     ] cnlab_reliable_sched_start: max_tx_per_packet=(4): num_tx_per_packet = 0
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(6): RX-ST(54, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(6): RX-ST(55, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(6): RX-ST(56, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(7): RX-ST(63, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(7): RX-ST(64, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(8): RX-ST(72, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(8): RX-ST(73, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(8): RX-ST(74, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(11): RX-ST(99, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(11): RX-ST(100, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(11): RX-ST(101, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(9): RX-ST(81, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(9): RX-ST(82, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(9): RX-ST(83, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(10): RX-ST(90, 0)
+[INFO: CNLAB     ]      : F5 BCAST-TX-cell: BCAST-TX(12, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(2): BCAST-RX(17, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(3): BCAST-RX(26, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(5): BCAST-RX(44, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(6): BCAST-RX(53, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(7): BCAST-RX(62, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(8): BCAST-RX(71, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(9): BCAST-RX(80, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(11): BCAST-RX(98, 0)
+[INFO: CNLAB     ] cnlab_reliable_sched_start: SF_DL_TS_START=(109)
+[INFO: CNLAB     ]      : DL-ST-TX(k)-cells from=(1) to cid=(3): DL-ST-TX(217, 0)
+[INFO: CNLAB     ]      : DL-ST-TX(k)-cells from=(1) to cid=(3): DL-ST-TX(218, 0)
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:1
+[D]:V:7:1
+[D]:V:8:1
+[D]:V:9:1
+[D]:V:11:1
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:2
+[D]:V:7:2
+[D]:V:8:2
+[D]:V:9:2
+[D]:V:11:2
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:3
+[D]:V:7:3
+[D]:V:8:3
+[D]:V:9:3
+[D]:V:11:3
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:4
+[D]:V:7:4
+[D]:V:8:4
+[D]:V:9:4
+[D]:V:11:4
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:10:1
+[D]:V:10:2
+[D]:V:10:3
+[D]:V:10:4
+[D]:V:6:5
+[D]:V:7:5
+[D]:V:8:5
+[D]:V:9:5
+[D]:V:11:5
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:6
+[D]:V:7:6
+[D]:V:8:6
+[D]:V:9:6
+[D]:V:11:6
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:7
+[D]:V:7:7
+[D]:V:8:7
+[D]:V:9:7
+[D]:V:11:7
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:8
+[D]:V:7:8
+[D]:V:8:8
+[D]:V:9:8
+[D]:V:11:8
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:9
+[D]:V:7:9
+[D]:V:8:9
+[D]:V:9:9
+[D]:V:11:9
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:10
+[D]:V:7:10
+[D]:V:8:10
+[D]:V:9:10
+[D]:V:11:10
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:11
+[D]:V:7:11
+[D]:V:8:11
+[D]:V:9:11
+[D]:V:11:11
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:10:7
+[D]:V:10:8
+[D]:V:10:9
+[D]:V:10:10
+[D]:V:10:11
+[D]:V:6:12
+[D]:V:7:12
+[D]:V:8:12
+[D]:V:9:12
+[D]:V:11:12
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:13
+[D]:V:7:13
+[D]:V:8:13
+[D]:V:9:13
+[D]:V:11:13
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:14
+[D]:V:7:14
+[D]:V:8:14
+[D]:V:9:14
+[D]:V:11:14
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:15
+[D]:V:7:15
+[D]:V:8:15
+[D]:V:9:15
+[D]:V:11:15
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:16
+[D]:V:7:16
+[D]:V:8:16
+[D]:V:9:16
+[D]:V:11:16
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:17
+[D]:V:7:17
+[D]:V:8:17
+[D]:V:9:17
+[D]:V:11:17
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:18
+[D]:V:7:18
+[D]:V:8:18
+[D]:V:9:18
+[D]:V:11:18
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:19
+[D]:V:7:19
+[D]:V:8:19
+[D]:V:9:19
+[D]:V:11:19
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:20
+[D]:V:7:20
+[D]:V:8:20
+[D]:V:9:20
+[D]:V:11:20
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:21
+[D]:V:7:21
+[D]:V:8:21
+[D]:V:9:21
+[D]:V:11:21
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:22
+[D]:V:7:22
+[D]:V:8:22
+[D]:V:9:22
+[D]:V:11:22
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:23
+[D]:V:7:23
+[D]:V:8:23
+[D]:V:9:23
+[D]:V:11:23
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:24
+[D]:V:7:24
+[D]:V:8:24
+[D]:V:9:24
+[D]:V:11:24
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:25
+[D]:V:7:25
+[D]:V:8:25
+[D]:V:9:25
+[D]:V:11:25
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:26
+[D]:V:7:26
+[D]:V:8:26
+[D]:V:9:26
+[D]:V:11:26
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:27
+[D]:V:7:27
+[D]:V:8:27
+[D]:V:9:27
+[D]:V:11:27
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:28
+[D]:V:7:28
+[D]:V:8:28
+[D]:V:9:28
+[D]:V:11:28
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:29
+[D]:V:7:29
+[D]:V:8:29
+[D]:V:9:29
+[D]:V:11:29
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:10:17
+[D]:V:10:18
+[D]:V:6:30
+[D]:V:7:30
+[D]:V:8:30
+[D]:V:9:30
+[D]:V:11:30
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:31
+[D]:V:7:31
+[D]:V:8:31
+[D]:V:9:31
+[D]:V:11:31
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:32
+[D]:V:7:32
+[D]:V:8:32
+[D]:V:9:32
+[D]:V:11:32
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:33
+[D]:V:7:33
+[D]:V:8:33
+[D]:V:9:33
+[D]:V:11:33
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:34
+[D]:V:7:34
+[D]:V:8:34
+[D]:V:9:34
+[D]:V:11:34
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:35
+[D]:V:7:35
+[D]:V:8:35
+[D]:V:9:35
+[D]:V:11:35
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:36
+[D]:V:7:36
+[D]:V:8:36
+[D]:V:9:36
+[D]:V:11:36
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:37
+[D]:V:7:37
+[D]:V:8:37
+[D]:V:9:37
+[D]:V:11:37
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:38
+[D]:V:7:38
+[D]:V:8:38
+[D]:V:9:38
+[D]:V:11:38
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:39
+[D]:V:7:39
+[D]:V:8:39
+[D]:V:9:39
+[D]:V:11:39
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:40
+[D]:V:7:40
+[D]:V:8:40
+[D]:V:9:40
+[D]:V:11:40
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:10:21
+[D]:V:10:22
+[D]:V:10:23
+[D]:V:10:24
+[D]:V:10:25
+[D]:V:10:26
+[D]:V:10:27
+[D]:V:10:28
+[D]:V:10:29
+[D]:V:10:30
+[D]:V:10:31
+[D]:V:10:32
+[D]:V:10:33
+[D]:V:10:35
+[D]:V:10:38
+[D]:V:6:41
+[D]:V:7:41
+[D]:V:8:41
+[D]:V:9:41
+[D]:V:11:41
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:42
+[D]:V:7:42
+[D]:V:8:42
+[D]:V:9:42
+[D]:V:11:42
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:43
+[D]:V:7:43
+[D]:V:8:43
+[D]:V:9:43
+[D]:V:11:43
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:44
+[D]:V:7:44
+[D]:V:8:44
+[D]:V:9:44
+[D]:V:11:44
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:45
+[D]:V:7:45
+[D]:V:8:45
+[D]:V:9:45
+[D]:V:11:45
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:46
+[D]:V:7:46
+[D]:V:8:46
+[D]:V:9:46
+[D]:V:11:46
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:47
+[D]:V:7:47
+[D]:V:8:47
+[D]:V:9:47
+[D]:V:11:47
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:10:43
+[D]:V:10:44
+[D]:V:10:45
+[D]:V:6:48
+[D]:V:7:48
+[D]:V:8:48
+[D]:V:9:48
+[D]:V:11:48
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:49
+[D]:V:7:49
+[D]:V:8:49
+[D]:V:9:49
+[D]:V:11:49
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:50
+[D]:V:7:50
+[D]:V:8:50
+[D]:V:9:50
+[D]:V:11:50
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:51
+[D]:V:7:51
+[D]:V:8:51
+[D]:V:9:51
+[D]:V:11:51
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:52
+[D]:V:7:52
+[D]:V:8:52
+[D]:V:9:52
+[D]:V:11:52
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:53
+[D]:V:7:53
+[D]:V:8:53
+[D]:V:9:53
+[D]:V:11:53
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:54
+[D]:V:7:54
+[D]:V:8:54
+[D]:V:9:54
+[D]:V:11:54
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:55
+[D]:V:7:55
+[D]:V:8:55
+[D]:V:9:55
+[D]:V:11:55
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:56
+[D]:V:7:56
+[D]:V:8:56
+[D]:V:9:56
+[D]:V:11:56
+[D]:V:11:57
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:57
+[D]:V:7:57
+[D]:V:8:57
+[D]:V:9:57
+[D]:V:11:58
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:58
+[D]:V:7:58
+[D]:V:8:58
+[D]:V:9:58
+[D]:V:11:59
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:10:48
+[D]:V:10:49
+[D]:V:10:50
+[D]:V:10:51
+[D]:V:10:52
+[D]:V:10:53
+[D]:V:10:54
+[D]:V:10:55
+[D]:V:10:56
+[D]:V:10:57
+[D]:V:10:58
+[D]:V:6:59
+[D]:V:7:59
+[D]:V:8:59
+[D]:V:9:59
+[D]:V:11:60
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:60
+[D]:V:7:60
+[D]:V:8:60
+[D]:V:9:60
+[D]:V:11:61
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:61
+[D]:V:7:61
+[D]:V:8:61
+[D]:V:9:61
+[D]:V:11:62
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:62
+[D]:V:7:62
+[D]:V:8:62
+[D]:V:9:62
+[D]:V:11:63
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:63
+[D]:V:7:63
+[D]:V:8:63
+[D]:V:9:63
+[D]:V:11:64
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:64
+[D]:V:7:64
+[D]:V:8:64
+[D]:V:9:64
+[D]:V:11:65
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:65
+[D]:V:7:65
+[D]:V:8:65
+[D]:V:9:65
+[D]:V:11:66
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:10:61
+[D]:V:10:62
+[D]:V:10:63
+[D]:V:10:64
+[D]:V:10:65
+[D]:V:6:66
+[D]:V:7:66
+[D]:V:8:66
+[D]:V:9:66
+[D]:V:11:67
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:67
+[D]:V:7:67
+[D]:V:8:67
+[D]:V:9:67
+[D]:V:11:68
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:68
+[D]:V:7:68
+[D]:V:8:68
+[D]:V:9:68
+[D]:V:11:69
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:69
+[D]:V:7:69
+[D]:V:8:69
+[D]:V:9:69
+[D]:V:11:70
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:70
+[D]:V:7:70
+[D]:V:8:70
+[D]:V:9:70
+[D]:V:11:71
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:71
+[D]:V:7:71
+[D]:V:8:71
+[D]:V:9:71
+[D]:V:11:72
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:72
+[D]:V:7:72
+[D]:V:8:72
+[D]:V:9:72
+[D]:V:11:73
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:73
+[D]:V:7:73
+[D]:V:8:73
+[D]:V:9:73
+[D]:V:11:74
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:74
+[D]:V:7:74
+[D]:V:8:74
+[D]:V:9:74
+[D]:V:11:75
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:75
+[D]:V:7:75
+[D]:V:8:75
+[D]:V:9:75
+[D]:V:11:76
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:76
+[D]:V:7:76
+[D]:V:8:76
+[D]:V:9:76
+[D]:V:11:77
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:10:69
+[D]:V:10:70
+[D]:V:10:71
+[D]:V:10:72
+[D]:V:10:73
+[D]:V:10:74
+[D]:V:10:75
+[D]:V:10:76
+[D]:V:10:77
+[D]:V:6:77
+[D]:V:7:77
+[D]:V:8:77
+[D]:V:9:77
+[D]:V:11:78
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:78
+[D]:V:7:78
+[D]:V:8:78
+[D]:V:9:78
+[D]:V:11:79
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:79
+[D]:V:7:79
+[D]:V:8:79
+[D]:V:9:79
+[D]:V:11:80
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:80
+[D]:V:7:80
+[D]:V:8:80
+[D]:V:9:80
+[D]:V:11:81
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:81
+[D]:V:7:81
+[D]:V:8:81
+[D]:V:9:81
+[D]:V:11:82
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:82
+[D]:V:7:82
+[D]:V:8:82
+[D]:V:9:82
+[D]:V:11:83
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:83
+[D]:V:7:83
+[D]:V:8:83
+[D]:V:9:83
+[D]:V:11:84
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:10:80
+[D]:V:10:81
+[D]:V:10:82
+[D]:V:10:83
+[D]:V:10:84
+[D]:V:6:84
+[D]:V:7:84
+[D]:V:8:84
+[D]:V:9:84
+[D]:V:11:85
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:85
+[D]:V:7:85
+[D]:V:8:85
+[D]:V:9:85
+[D]:V:11:86
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:86
+[D]:V:7:86
+[D]:V:8:86
+[D]:V:9:86
+[D]:V:11:87
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:87
+[D]:V:7:87
+[D]:V:8:87
+[D]:V:9:87
+[D]:V:9:88
+[D]:V:11:88
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:88
+[D]:V:7:88
+[D]:V:8:88
+[D]:V:9:89
+[D]:V:11:89
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:89
+[D]:V:7:89
+[D]:V:8:89
+[D]:V:9:90
+[D]:V:11:90
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:90
+[D]:V:7:90
+[D]:V:8:90
+[D]:V:9:91
+[D]:V:11:91
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:91
+[D]:V:7:91
+[D]:V:8:91
+[D]:V:9:92
+[D]:V:11:92
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:92
+[D]:V:7:92
+[D]:V:8:92
+[D]:V:9:93
+[D]:V:11:93
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:93
+[D]:V:7:93
+[D]:V:8:93
+[D]:V:9:94
+[D]:V:11:94
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:94
+[D]:V:7:94
+[D]:V:8:94
+[D]:V:9:95
+[D]:V:11:95
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:10:88
+[D]:V:10:89
+[D]:V:10:90
+[D]:V:10:91
+[D]:V:10:92
+[D]:V:10:93
+[D]:V:10:94
+[D]:V:10:95
+[D]:V:6:95
+[D]:V:7:95
+[D]:V:8:95
+[D]:V:9:96
+[D]:V:11:96
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:96
+[D]:V:7:96
+[D]:V:8:96
+[D]:V:9:97
+[D]:V:11:97
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:97
+[D]:V:7:97
+[D]:V:8:97
+[D]:V:9:98
+[D]:V:11:98
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:98
+[D]:V:7:98
+[D]:V:8:98
+[D]:V:9:99
+[D]:V:11:99
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[D]:V:6:99
+[D]:V:7:99
+[D]:V:8:99
+[Z]: Node=(9) ===END-OF-DATA=== at ASN=(92531)
+
+[Z]: Node=(11) ===END-OF-DATA=== at ASN=(92549)
+
+[INFO: CNLAB     ] cnlab_send_periodic_cmd_callback: status=(0): node=(1), ACTUATOR=(12), cmd_dst_node=(3) 
+[Z]: Node=(6) ===END-OF-DATA=== at ASN=(92785)
+
+[Z]: Node=(7) ===END-OF-DATA=== at ASN=(92794)
+
+[Z]: Node=(8) ===END-OF-DATA=== at ASN=(92803)
+
+[INFO: CNLAB     ] cnlab_data_prr_TO_callback: calculate Data Reception Rate timer callback
+[INFO: CNLAB     ]      node=(1): number of received data from=(6) is (100) PRR=(9999) 
+[INFO: CNLAB     ]      node=(1): number of received data from=(7) is (100) PRR=(9999) 
+[INFO: CNLAB     ]      node=(1): number of received data from=(8) is (100) PRR=(9999) 
+[INFO: CNLAB     ]      node=(1): number of received data from=(9) is (100) PRR=(9999) 
+[INFO: CNLAB     ]      node=(1): number of received data from=(10) is (67) PRR=(6699) 
+[INFO: CNLAB     ]      node=(1): number of received data from=(11) is (100) PRR=(9999) 
+[D]:V:10:99
+[Z]: Node=(10) ===END-OF-DATA=== at ASN=(94445)
+
+[INFO: CNLAB     ] cnlab_data_prr_TO_callback: calculate Data Reception Rate timer callback
+[INFO: CNLAB     ]      node=(1): number of received data from=(6) is (100) PRR=(9999) 
+[INFO: CNLAB     ]      node=(1): number of received data from=(7) is (100) PRR=(9999) 
+[INFO: CNLAB     ]      node=(1): number of received data from=(8) is (100) PRR=(9999) 
+[INFO: CNLAB     ]      node=(1): number of received data from=(9) is (100) PRR=(9999) 
+[INFO: CNLAB     ]      node=(1): number of received data from=(10) is (69) PRR=(6899) 
+[INFO: CNLAB     ]      node=(1): number of received data from=(11) is (100) PRR=(9999) 
+[INFO: Main      ] NODE ID: 1
+[PRI : TSCH      ] tsch_init: TX Power: 3
+[INFO: Main      ] ----------contiki-main.c: after netstack_init() 
+[INFO: Main      ] Starting Contiki-NG
+[INFO: Main      ] - Routing: R-RPT
+[INFO: Main      ] - Net: nullnet
+[INFO: Main      ] - PHY: IEEE 802.15.4
+[INFO: Main      ] - MAC: IEEE 802.15.4e TSCH
+[INFO: Main      ] - 802.15.4 PANID: 0xabcd
+[INFO: Main      ] - 802.15.4 TSCH channel hopping sequence length: 5
+[INFO: Main      ] - 802.15.4 TSCH default hopping sequence: [ 16 25 17 20 22 ]
+[INFO: Main      ] Node ID: 1 Node Type: 1
+[INFO: Main      ] Link-layer address: 0012.4b00.194a.52fb
+[INFO: Main      ] ----------contiki-main.c: after netstack_init() 
+[INFO: Zoul      ] Zolertia RE-Mote revision B platform
+Orchestra: initializing rule 0
+Orchestra: initialization done
+[INFO: Main      ] contiki-main.c: orchestra_init() called
+[INFO: Main      ] NODE ID: 1
+[PRI : TSCH      ] tsch_init: TX Power: 3
+[INFO: Main      ] ----------contiki-main.c: after netstack_init() 
+[INFO: Main      ] Starting Contiki-NG
+[INFO: Main      ] - Routing: R-RPT
+[INFO: Main      ] - Net: nullnet
+[INFO: Main      ] - PHY: IEEE 802.15.4
+[INFO: Main      ] - MAC: IEEE 802.15.4e TSCH
+[INFO: Main      ] - 802.15.4 PANID: 0xabcd
+[INFO: Main      ] - 802.15.4 TSCH channel hopping sequence length: 5
+[INFO: Main      ] - 802.15.4 TSCH default hopping sequence: [ 16 25 17 20 22 ]
+[INFO: Main      ] Node ID: 1 Node Type: 1
+[INFO: Main      ] Link-layer address: 0012.4b00.194a.52fb
+[INFO: Main      ] ----------contiki-main.c: after netstack_init() 
+[INFO: Zoul      ] Zolertia RE-Mote revision B platform
+Orchestra: initializing rule 0
+Orchestra: initialization done
+[INFO: Main      ] contiki-main.c: orchestra_init() called
+[INFO: Main      ] NODE ID: 1
+[PRI : TSCH      ] tsch_init: TX Power: 3
+[INFO: Main      ] ----------contiki-main.c: after netstack_init() 
+[INFO: Main      ] Starting Contiki-NG
+[INFO: Main      ] - Routing: R-RPT
+[INFO: Main      ] - Net: nullnet
+[INFO: Main      ] - PHY: IEEE 802.15.4
+[INFO: Main      ] - MAC: IEEE 802.15.4e TSCH
+[INFO: Main      ] - 802.15.4 PANID: 0xabcd
+[INFO: Main      ] - 802.15.4 TSCH channel hopping sequence length: 5
+[INFO: Main      ] - 802.15.4 TSCH default hopping sequence: [ 16 25 17 20 22 ]
+[INFO: Main      ] Node ID: 1 Node Type: 1
+[INFO: Main      ] Link-layer address: 0012.4b00.194a.52fb
+[INFO: Main      ] ----------contiki-main.c: after netstack_init() 
+[INFO: Zoul      ] Zolertia RE-Mote revision B platform
+Orchestra: initializing rule 0
+Orchestra: initialization done
+[INFO: Main      ] contiki-main.c: orchestra_init() called
+[INFO: Main      ] NODE ID: 1
+[PRI : TSCH      ] tsch_init: TX Power: 3
+[INFO: Main      ] ----------contiki-main.c: after netstack_init() 
+[INFO: Main      ] Starting Contiki-NG
+[INFO: Main      ] - Routing: R-RPT
+[INFO: Main      ] - Net: nullnet
+[INFO: Main      ] - PHY: IEEE 802.15.4
+[INFO: Main      ] - MAC: IEEE 802.15.4e TSCH
+[INFO: Main      ] - 802.15.4 PANID: 0xabcd
+[INFO: Main      ] - 802.15.4 TSCH channel hopping sequence length: 5
+[INFO: Main
