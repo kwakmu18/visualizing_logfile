@@ -9,34 +9,63 @@ def nodeSelected(event):
     global canvas_widget, label, node_number
     if event.button == 1:
         for key in logData.pos.keys():
-            nodex,nodey = logData.pos[key]
+            nodex,nodey = logData.pos[key] if mode.get()==0 or node_number==logData.ROOT_NODE else logData.neighborPos[key]
             if (nodex-event.xdata)**2+(nodey-event.ydata)**2<=0.002:
                 changeLabel(int(key))
-                if key=="1":
-                    node_number=1
-                    drawGraph(logData.G)
+                if key==str(logData.ROOT_NODE):
+                    node_number=logData.ROOT_NODE
+                    drawRootGraph(logData.G)
                     return
                 elif int(key)==node_number:
                     return
                 node_number=int(key)
-                if mode2.get()==0:
-                    makeGraph.makeRootGraph(mode1, int(key))
-                    drawGraph(logData.rootG)
+                if mode.get()==0:
+                    makeGraph.makeRootGraph(int(key))
+                    #logData.pos = nx.spring_layout(logData.G)
+                    drawRootGraph(logData.rootG)
                 else:
-                    makeGraph.makeNeighborGraph(mode1, int(key))
-                    drawGraph(logData.neighborG)
+                    makeGraph.makeNeighborGraph(int(key))
+                    drawNeighborGraph()
                 return
 
 def changeLabel(index):
     global label
-    if index==1: label["text"]="map\n \n "
+    if index==logData.ROOT_NODE: label["text"]="map\n \n "
     else:
-        label["text"] = f"{index}번 노드\n{logData.TYPE_STR[logData.type[index]]}\n"
-        label["text"] += (f"PRR = {logData.prr[index]}") if logData.type[index] == 2 else " "
+        label["text"] = f"{index}번 노드\n{logData.TYPE_STR[logData.node_type[index]]}\n"
+        label["text"] += (f"PRR = {logData.prr[index]}") if logData.node_type[index] == 2 else " "
 
-def drawGraph(G):
+def drawNeighborGraph():
     global canvas_widget
+    plt.close()
+    if canvas_widget!=None: canvas_widget.destroy()
+    fig, ax = plt.subplots()
 
+    name = nx.get_node_attributes(logData.neighborG, 'name')
+    pos = nx.get_node_attributes(logData.neighborG, 'pos')
+    node_color = nx.get_node_attributes(logData.neighborG, 'color').values()
+    edge_color = list(nx.get_node_attributes(logData.neighborG, 'edge_color').values())
+    weight = nx.get_edge_attributes(logData.neighborG, 'weight')
+
+    fig.canvas.mpl_connect("button_press_event",nodeSelected)
+
+    nx.draw_networkx_edges(logData.neighborG, pos)
+    nx.draw_networkx_edge_labels(logData.neighborG, pos, edge_labels=weight, font_color="blue")
+    nx.draw_networkx_nodes(logData.neighborG, pos=pos, node_color=node_color, edgecolors=edge_color)
+    nx.draw_networkx_labels(logData.G, pos, labels=name)  # 원래의 노드 라벨을 그립니다.
+
+    canvas = FigureCanvasTkAgg(fig, master=frame2)
+    canvas.draw()
+
+    # Canvas 위젯 생성 및 그래프 출력
+    canvas_widget = canvas.get_tk_widget()
+    canvas_widget["height"] = 800
+    canvas_widget["width"] = 1400
+    canvas_widget.pack()
+
+def drawRootGraph(G):
+    global canvas_widget
+    print(G)
     plt.close()
     if canvas_widget!=None: canvas_widget.destroy()
     fig, ax = plt.subplots()
@@ -46,7 +75,7 @@ def drawGraph(G):
     logData.rank_labels = {node: logData.ranks[int(node)] for node in G.nodes()}  # 'rank' 문자열을 제거하고 숫자만 표시합니다.
     nx.draw_networkx_edges(G, logData.pos)
     weight = nx.get_edge_attributes(G, 'weight')
-    nx.draw_networkx_edge_labels(G, logData.pos, edge_labels=weight)
+    nx.draw_networkx_edge_labels(G, logData.pos, edge_labels=weight, font_color="blue")
     nx.draw_networkx_nodes(logData.G, logData.pos, node_color=logData.colors, edgecolors=logData.edge_colors)
     nx.draw_networkx_labels(logData.G, logData.pos)  # 원래의 노드 라벨을 그립니다.
     nx.draw_networkx_labels(G, logData.rank_pos, labels=logData.rank_labels, font_color='darkred')
@@ -56,27 +85,26 @@ def drawGraph(G):
 
     # Canvas 위젯 생성 및 그래프 출력
     canvas_widget = canvas.get_tk_widget()
-    canvas_widget["height"] = 1000
-    canvas_widget["width"] = 1800
+    canvas_widget["height"] = 800
+    canvas_widget["width"] = 1400
     canvas_widget.pack()
 
 def radioButtonPressed():
-    if node_number == 1:
+    if node_number == logData.ROOT_NODE:
         return
-    if mode2.get()==0:
-        makeGraph.makeRootGraph(mode1, node_number)
-        drawGraph(logData.rootG)
+    if mode.get()==0:
+        makeGraph.makeRootGraph(node_number)
+        drawRootGraph(logData.rootG)
     else:
-        makeGraph.makeNeighborGraph(mode1, node_number)
-        drawGraph(logData.neighborG)
+        makeGraph.makeNeighborGraph(node_number)
+        drawNeighborGraph()
 
 # tkinter 윈도우 생성
 window = tk.Tk()
 window.title("NetworkX Graph")
-mode1 = tk.IntVar() # upstream vs downstream
-mode2 = tk.IntVar() # root vs neighbor
+mode = tk.IntVar() # root vs neighbor
 
-node_number = 1
+node_number = logData.ROOT_NODE
 canvas_widget, canvas_widget2 = None, None
 font = ("Pretendard", 12)
 # 그래프를 그릴 Figure 객체 생성
@@ -90,17 +118,11 @@ frame2.pack(side="bottom")
 label = tk.Label(frame1, text="map\n \n ", font=font)
 label.place(x=450, y=0, width=100, height=50)
 
-modeRadio1 = tk.Radiobutton(frame1, text="upstream", variable=mode1, 
-                        value=0, command=radioButtonPressed, font=font)
-modeRadio1.place(x=780, y=0, width=100, height=25)
-modeRadio2 = tk.Radiobutton(frame1, text="downstream", variable=mode1,
-                        value=1, command=radioButtonPressed, font=font)
-modeRadio2.place(x=880,y=0, width=120, height=25)
-modeRadio3 = tk.Radiobutton(frame1, text="root node", font=font, variable=mode2, value=0, command=radioButtonPressed)
-modeRadio3.place(x=780, y=25)
-modeRadio4 = tk.Radiobutton(frame1, text="neighbor", font=font, variable=mode2, value=1, command=radioButtonPressed)
-modeRadio4.place(x=880, y=25)
+modeRadio1 = tk.Radiobutton(frame1, text="root node", font=font, variable=mode, value=0, command=radioButtonPressed)
+modeRadio1.place(x=780, y=25)
+modeRadio2 = tk.Radiobutton(frame1, text="neighbor", font=font, variable=mode, value=1, command=radioButtonPressed)
+modeRadio2.place(x=880, y=25)
 
 # tkinter 메인 루프 실행
-drawGraph(logData.G)
+drawRootGraph(logData.G)
 window.mainloop()
