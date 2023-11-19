@@ -37,5 +37,4 @@ def makeNeighborGraph(index):
                  (str(i), str(index),"")])
         cnt+=2*pi/(logData.child_cnt[index])
     logData.neighborPos = nx.get_node_attributes(logData.neighborG, "pos")
-    print(cnt, 2*pi)
 

@@ -65,7 +65,6 @@ def drawNeighborGraph():
 
 def drawRootGraph(G):
     global canvas_widget
-    print(G)
     plt.close()
     if canvas_widget!=None: canvas_widget.destroy()
     fig, ax = plt.subplots()

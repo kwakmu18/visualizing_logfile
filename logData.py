@@ -58,7 +58,6 @@ for i in range(1, NODE_CNT+1):
         if i==j: continue
         if incoming[i][j]!=0: cnt+=1
     child_cnt[i] = cnt
-print(child_cnt)
 for node_id, node in root.items():
     for child in node.children:
         G.add_edge(node.name, child.name)
