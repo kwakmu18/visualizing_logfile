@@ -26,7 +26,7 @@ prr = {}
 ranks = {}
 G = nx.Graph()
 rootG = nx.DiGraph()
-neighborG = nx.DiGraph()
+neighborG = nx.Graph()
 colors = []
 edge_colors = []
 
@@ -54,16 +54,26 @@ with open(LOGFILE_NAME, 'r') as file:
 
 for i in range(1, NODE_CNT+1):
     cnt = 0
-    for j in range(1, NODE_CNT+1):
+    for j in range(i, NODE_CNT+1):
         if i==j: continue
         if incoming[i][j]!=0: cnt+=1
     child_cnt[i] = cnt
+
+
+dist = {}
+for i in range(1, NODE_CNT+1):
+    for j in range(i+1, NODE_CNT+1):
+        if i==j or outgoing[i][j]==0: continue
+        G.add_edge(str(i), str(j))
+        dist[(str(i),str(j))]=outgoing[i][j]
+pos = nx.kamada_kawai_layout(G)
+
+G.clear(); G.clear_edges()
 for node_id, node in root.items():
     for child in node.children:
         G.add_edge(node.name, child.name)
 
-pos = nx.spring_layout(G)
-neighborPos = None
+neighborPos = pos
 
 for node_id, _ in pos.items():
     node_id = int(node_id)

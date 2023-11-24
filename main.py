@@ -1,5 +1,4 @@
 import tkinter as tk
-import tkinter.ttk as ttk
 import networkx as nx
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -16,12 +15,11 @@ def nodeSelected(event):
                     node_number=logData.ROOT_NODE
                     drawRootGraph(logData.G)
                     return
-                elif int(key)==node_number:
+                if int(key)==node_number:
                     return
                 node_number=int(key)
                 if mode.get()==0:
                     makeGraph.makeRootGraph(int(key))
-                    #logData.pos = nx.spring_layout(logData.G)
                     drawRootGraph(logData.rootG)
                 else:
                     makeGraph.makeNeighborGraph(int(key))
@@ -39,53 +37,45 @@ def drawNeighborGraph():
     global canvas_widget
     plt.close()
     if canvas_widget!=None: canvas_widget.destroy()
-    fig, ax = plt.subplots()
-
-    name = nx.get_node_attributes(logData.neighborG, 'name')
-    pos = nx.get_node_attributes(logData.neighborG, 'pos')
+    fig, ax = plt.subplots(figsize=(18,10))
+    pos = logData.neighborPos
     node_color = nx.get_node_attributes(logData.neighborG, 'color').values()
     edge_color = list(nx.get_node_attributes(logData.neighborG, 'edge_color').values())
     weight = nx.get_edge_attributes(logData.neighborG, 'weight')
-
     fig.canvas.mpl_connect("button_press_event",nodeSelected)
-
-    nx.draw_networkx_edges(logData.neighborG, pos)
-    nx.draw_networkx_edge_labels(logData.neighborG, pos, edge_labels=weight, font_color="blue")
-    nx.draw_networkx_nodes(logData.neighborG, pos=pos, node_color=node_color, edgecolors=edge_color)
-    nx.draw_networkx_labels(logData.G, pos, labels=name)  # 원래의 노드 라벨을 그립니다.
+    nx.draw(logData.neighborG, pos,node_color=node_color,
+            edgecolors=edge_color, with_labels=True)
+    nx.draw_networkx_edge_labels(logData.neighborG, pos, edge_labels=weight,
+                                 font_color="blue", font_size=9, font_family="Pretendard")
 
     canvas = FigureCanvasTkAgg(fig, master=frame2)
     canvas.draw()
 
     # Canvas 위젯 생성 및 그래프 출력
     canvas_widget = canvas.get_tk_widget()
-    canvas_widget["height"] = 800
-    canvas_widget["width"] = 1400
     canvas_widget.pack()
 
 def drawRootGraph(G):
     global canvas_widget
     plt.close()
     if canvas_widget!=None: canvas_widget.destroy()
-    fig, ax = plt.subplots()
+    fig, ax = plt.subplots(figsize=(18,10))
     fig.canvas.mpl_connect("button_press_event",nodeSelected)
 
-    logData.rank_pos = {node: (logData.pos[node][0], logData.pos[node][1]+0.1) for node in G.nodes()}  # rank 라벨의 위치를 조정합니다.
+    logData.rank_pos = {node: (logData.pos[node][0], logData.pos[node][1]+0.05) for node in G.nodes()}  # rank 라벨의 위치를 조정합니다.
     logData.rank_labels = {node: logData.ranks[int(node)] for node in G.nodes()}  # 'rank' 문자열을 제거하고 숫자만 표시합니다.
     nx.draw_networkx_edges(G, logData.pos)
     weight = nx.get_edge_attributes(G, 'weight')
-    nx.draw_networkx_edge_labels(G, logData.pos, edge_labels=weight, font_color="blue")
+    nx.draw_networkx_edge_labels(G, logData.pos, edge_labels=weight, font_color="blue", font_size=7)
     nx.draw_networkx_nodes(logData.G, logData.pos, node_color=logData.colors, edgecolors=logData.edge_colors)
-    nx.draw_networkx_labels(logData.G, logData.pos)  # 원래의 노드 라벨을 그립니다.
-    nx.draw_networkx_labels(G, logData.rank_pos, labels=logData.rank_labels, font_color='darkred')
+    nx.draw_networkx_labels(logData.G, logData.pos, font_family="Pretendard")  # 원래의 노드 라벨을 그립니다.
+    nx.draw_networkx_labels(G, logData.rank_pos, labels=logData.rank_labels, font_color='darkred', font_family="Pretendard")
 
     canvas = FigureCanvasTkAgg(fig, master=frame2)
     canvas.draw()
 
     # Canvas 위젯 생성 및 그래프 출력
     canvas_widget = canvas.get_tk_widget()
-    canvas_widget["height"] = 800
-    canvas_widget["width"] = 1400
     canvas_widget.pack()
 
 def radioButtonPressed():
