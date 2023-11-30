@@ -1,5 +1,4 @@
 import logData
-from math import *
 
 def makeRootGraph(index):
     logData.rootG.clear()

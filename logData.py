@@ -11,9 +11,9 @@ def extract(text):
 NODE_CNT = 12
 ROOT_NODE = 1
 LOGFILE_NAME = "log.txt"
-TYPE_STR = [None, "AP", "Sensor", "Actuator", "Router"]
-NODE_COLOR = [None, "red", "white", "green", "cyan"]
-NODE_EDGECOLOR = ["white", "white", "black", "white", "white"]
+TYPE_STR = [None, "AP", "Sensor", "Actuator", "Router", "Virtual Sensor"]
+NODE_COLOR = [None, "red", "white", "green", "cyan", "blue"]
+NODE_EDGECOLOR = ["white", "white", "black", "white", "white", "black"]
 
 root = {}
 incoming = [[0 for _ in range(NODE_CNT+1)] for _ in range(NODE_CNT+1)]
@@ -89,3 +89,6 @@ for node_id, _ in pos.items():
     elif node_type[node_id]==4:
         colors.append("cyan")
         edge_colors.append("white")
+    elif node_type[node_id]==5:
+        colors.append("blue")
+        edge_colors.append("black")
