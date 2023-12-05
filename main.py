@@ -64,10 +64,14 @@ def drawRootGraph(G):
 
     logData.rank_pos = {node: (logData.pos[node][0], logData.pos[node][1]+0.05) for node in G.nodes()}  # rank 라벨의 위치를 조정합니다.
     logData.rank_labels = {node: logData.ranks[int(node)] for node in G.nodes()}  # 'rank' 문자열을 제거하고 숫자만 표시합니다.
+
+    node_color = nx.get_node_attributes(logData.G, 'color').values()
+    edge_color = list(nx.get_node_attributes(logData.G, 'edge_color').values())
+
     nx.draw_networkx_edges(G, logData.pos)
     weight = nx.get_edge_attributes(G, 'weight')
-    nx.draw_networkx_edge_labels(G, logData.pos, edge_labels=weight, font_color="blue", font_size=7)
-    nx.draw_networkx_nodes(logData.G, logData.pos, node_color=logData.colors, edgecolors=logData.edge_colors)
+    nx.draw_networkx_edge_labels(G, logData.pos, edge_labels=weight, font_color="blue", font_size=9)
+    nx.draw_networkx_nodes(logData.G, logData.pos, node_color=node_color, edgecolors=edge_color)
     nx.draw_networkx_labels(logData.G, logData.pos, font_family="Pretendard")  # 원래의 노드 라벨을 그립니다.
     nx.draw_networkx_labels(G, logData.rank_pos, labels=logData.rank_labels, font_color='darkred', font_family="Pretendard")
 

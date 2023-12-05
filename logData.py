@@ -8,9 +8,9 @@ def extract(text):
     
     return matches
 
-NODE_CNT = 12
+NODE_CNT = 14
 ROOT_NODE = 1
-LOGFILE_NAME = "log.txt"
+LOGFILE_NAME = "log0915-1-RP.txt"
 TYPE_STR = [None, "AP", "Sensor", "Actuator", "Router", "Virtual Sensor"]
 NODE_COLOR = [None, "red", "white", "green", "cyan", "blue"]
 NODE_EDGECOLOR = ["white", "white", "black", "white", "white", "black"]
@@ -41,7 +41,6 @@ with open(LOGFILE_NAME, 'r') as file:
             ranks[root_id] = root_rank
             node_type[root_id] = root_type
             parent[root_id] = root_parent_id
-            
             for section in sections[1:]:
                 child_id, child_level, child_incoming, child_outgoing = map(int, section.split(","))
                 incoming[root_id][child_id]=child_incoming
@@ -59,7 +58,6 @@ for i in range(1, NODE_CNT+1):
         if incoming[i][j]!=0: cnt+=1
     child_cnt[i] = cnt
 
-
 dist = {}
 for i in range(1, NODE_CNT+1):
     for j in range(i+1, NODE_CNT+1):
@@ -67,13 +65,15 @@ for i in range(1, NODE_CNT+1):
         G.add_edge(str(i), str(j))
         dist[(str(i),str(j))]=outgoing[i][j]
 pos = nx.kamada_kawai_layout(G)
+G.clear();
+G.clear_edges()
 
-G.clear(); G.clear_edges()
-for node_id, node in root.items():
-    for child in node.children:
-        G.add_edge(node.name, child.name)
-
+for i in range(2, len(parent)):
+    G.add_edge(str(i), str(parent[i]))
 neighborPos = pos
+
+for i in range(1, NODE_CNT+1):
+    G.add_node(str(i), name=i,color=NODE_COLOR[node_type[i]], edge_color=NODE_EDGECOLOR[node_type[i]])
 
 for node_id, _ in pos.items():
     node_id = int(node_id)

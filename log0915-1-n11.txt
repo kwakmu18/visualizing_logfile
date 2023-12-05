@@ -1,0 +1,232 @@
+=~=~=~=~=~=~=~=~=~=~=~= PuTTY log 2023.09.15 01:02:31 =~=~=~=~=~=~=~=~=~=~=~=
+[INFO: Main      ] NODE ID: 11
+[PRI : TSCH      ] tsch_init: TX Power: 3
+[INFO: Main      ] ----------contiki-main.c: after netstack_init() 
+[INFO: Main      ] Starting Contiki-NG
+[INFO: Main      ] - Routing: R-RPT
+[INFO: Main      ] - Net: nullnet
+[INFO: Main      ] - PHY: IEEE 802.15.4
+[INFO: Main      ] - MAC: IEEE 802.15.4e TSCH
+[INFO: Main      ] - 802.15.4 PANID: 0xabcd
+[INFO: Main      ] - 802.15.4 TSCH channel hopping sequence length: 5
+[INFO: Main      ] - 802.15.4 TSCH default hopping sequence: [ 16 25 17 20 22 ]
+[INFO: Main      ] Node ID: 11 Node Type: 4
+[INFO: Main      ] Link-layer address: 0012.4b00.194a.52a1
+[INFO: Main      ] ----------contiki-main.c: after netstack_init() 
+[INFO: Zoul      ] Zolertia RE-Mote revision B platform
+Orchestra: initializing rule 0
+Orchestra: initialization done
+[INFO: Main      ] contiki-main.c: orchestra_init() called
+[INFO: CNLAB_SENSOR] User button Pressed
+[INFO: CNLAB     ] cnlab_measure_link_process: starts...
+[INFO: CNLAB_SENSOR] node.c: NETSTACK_MAN.on() performed
+[INFO: CNLAB_SENSOR] User button Released
+[PRI : TSCH      ] EB Packet: 40eb cdab ffff fb52 4a19 004b 1200 003f 4288 061a 3500 0000 0000 191c 0109 077a 003a 08ef 0319 03ef 0395 088d 01b7 006b 0992 101a 2711 c801 0000 0000 0000 0005 0010 1911 1416 0000 0a1b 0100 3500 0100 0000 0001 
+[PRI : TSCH      ] Frame Control: 0x0 0x0 0x0 0x0 0x1 0x1 0x1 0x2 0x2 0x3
+[PRI : TSCH      ] Frame Type: 0x0 (IEEE 802.15.4-BEACON FRAME)
+[PRI : TSCH      ] Frame version: 0x2 (IEEE 802.15.4-2015)
+[PRI : TSCH      ] Sequence: 0x0
+[PRI : TSCH      ] Source PANID: 0xabcd, Dest PANID: 0xabcd
+[PRI : TSCH      ] Source Address: 0012.4b00.194a.52fb, Destination Address: ffff.0000.0000.0000
+[PRI : TSCH      ] Payload Information Elements
+[PRI : TSCH      ] ASN: 0x35, Join Priority: 0x0
+[PRI : TSCH      ] Timeslot Length: 10
+[PRI : TSCH      ] Channel Hopping Sequence Length: 5
+[PRI : TSCH      ] Channel hopping Sequence: [ 16 25 17 20 22 ]
+[PRI : TSCH      ] Slotframe size: 53
+[INFO: CNLAB     ] cnlab_measure_link_process: Current ASN=71 sf_size=53 sf_length=530 
+[INFO: CNLAB     ] cnlab_measure_link_process: WAITING FOR ALL NODES JOIN THE NETWORK at ASN = 74
+[INFO: CNLAB     ] cnlab_measure_link_process: END OF SEND EB at ASN = 1325
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=1 level=0 seqno=1 RSSI=-55 at ASN=1434 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=2 level=1 seqno=1 RSSI=-61 at ASN=1437 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=3 level=1 seqno=1 RSSI=-55 at ASN=1440 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=4 level=2 seqno=1 RSSI=-53 at ASN=1443 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=5 level=1 seqno=1 RSSI=-55 at ASN=1446 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=6 level=1 seqno=1 RSSI=-56 at ASN=1449 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=8 level=1 seqno=1 RSSI=-70 at ASN=1455 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=9 level=1 seqno=1 RSSI=-55 at ASN=1458 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=10 level=1 seqno=1 RSSI=-61 at ASN=1461 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=12 level=2 seqno=1 RSSI=-45 at ASN=1467 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=13 level=1 seqno=1 RSSI=-50 at ASN=1470 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=14 level=1 seqno=1 RSSI=-51 at ASN=1473 
+[INFO: CNLAB     ] cnlab_start_measure_link_quality: add new NBR: id=7 level=1 seqno=2 RSSI=-58 at ASN=1558 
+[INFO: CNLAB     ] cnlab_measure_link_process: all PROBE_PRR packets sent: at ASN = 22419
+[INFO: CNLAB     ] cnlab_prr_timer_callback: node(11) degree=(12) higher than MIN_PRR_DEC_POINT 
+[INFO: CNLAB     ] cnlab_measure_link_process: node.degree=(12) after selection 
+[P]:11:12:(1,9549):(2,9449):(3,9549):(4,9449):(5,9599):(6,9399):(9,9499):(10,9699):(12,9549):(13,9549):(14,9649):(7,9349)
+[INFO: CNLAB     ] cnlab_prr_msg_output_callback: estimate_ASN_DATA_SF=(33814)
+[INFO: CNLAB     ] cnlab_switch_time_source_to_best_nbr: node=(11) new time-source=(1) 
+[INFO: CNLAB     ] cnlab_prr_msg_output_callback: set cnlab_TC_timeout_callback TO at ASN=(23161) TO=(5300)
+[INFO: CNLAB     ] cnlab_TC_output_callback: TC_PACKET sent: node=(11) level=(1) rank=(9499) pid=(1) at ASN=(23194) 
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (23247)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (24413)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (25579)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (26798)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (27964)
+[INFO: CNLAB     ] -----cnlab_TC_timeout_callback: set cnlab_NI_step_timeout_callback TO at ASN = 28461
+[INFO: CNLAB     ] -----cnlab_TC_timeout_callback: node=(11) update timesource: node.pid=(1) 
+[INFO: CNLAB     ] ----- cnlab_NI_step_timeout_callback TO = (5300) 
+[INFO: CNLAB     ] cnlab_NI_msg_output_callback: Node=(11) sent NI-msg to parent=(1) 
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (28494)
+[INFO: CNLAB     ] cnlab_NI_forward_callback: Node=(11) forwarded NI-msg to next-hop=(1) 
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (29713)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (30879)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (31992)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (33158)
+[INFO: CNLAB     ] cnlab_NI_step_timeout_callback: NI_info STEP finished: at ASN = 33767
+[INFO: CNLAB     ] cnlab_reliable_sched_start: Node=(11): at ASN = 33773
+[INFO: CNLAB     ] cnlab_reliable_sched_start: SF_DATA_RELIABLE_SIZE=(311)
+[INFO: CNLAB     ] cnlab_reliable_sched_start: max_tx_per_packet=(4): num_tx_per_packet = 3
+[INFO: CNLAB     ]      : F1 TX-cell : TX(99, 0)
+[INFO: CNLAB     ]      : F1 TX-cell : TX(100, 0)
+[INFO: CNLAB     ]      : F1 TX-cell : TX(101, 0)
+[INFO: CNLAB     ]      : F2 TX-ST-nodes-cells of node=(4): TX-ST(36, 0)
+[INFO: CNLAB     ]      : F2 TX-ST-nodes-cells of node=(4): TX-ST(37, 0)
+[INFO: CNLAB     ]      : F2 TX-ST-nodes-cells of node=(4): TX-ST(38, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(4): RX-ST(32, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(4): RX-ST(33, 0)
+[INFO: CNLAB     ]      : F3 RX-ST-cells from node=(4): RX-ST(34, 0)
+[INFO: CNLAB     ]      : F5 BCAST-TX-cell: BCAST-TX(98, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(1): BCAST-RX(12, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(3): BCAST-RX(26, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(4): BCAST-RX(31, 1)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(5): BCAST-RX(44, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(6): BCAST-RX(53, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(9): BCAST-RX(80, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(10): BCAST-RX(89, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(12): BCAST-RX(103, 1)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(13): BCAST-RX(116, 0)
+[INFO: CNLAB     ]      : F4 BCAST-RX-cells: from nbr=(14): BCAST-RX(125, 0)
+[INFO: CNLAB     ] cnlab_reliable_sched_start: SF_DL_TS_START=(127)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (33937)
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[INFO: CNLAB     ] cnlab_forward_periodic_data_callback: DATA packet forward (from,to)=(11,1) 
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (66281)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (67525)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (68771)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (70013)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (71259)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (72501)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (73744)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (74989)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (76232)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (77477)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (79032)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (79406)
+[PRI : TSCH      ] KA sent to 0012.4b00.194a.52fb, at ASN (79777)
+[INFO: Main      ] NODE ID: 11
+[PRI : TSCH      ] tsch_init: TX Power: 3
+[INFO: Main      ] ----------contiki-main.c: after netstack_init() 
+[INFO: Main      ] Starting Contiki-NG
+[INFO: Main      ] - Routing: R-RPT
+[INFO: Main      ] - Net: nullnet
+[INFO: Main      ] - PHY: IEEE 802.15.4
+[INFO: Main      ] - MAC: IEEE 802.15.4e TSCH
+[INFO: Main      ] - 802.15.4 PANID: 0xabcd
+[INFO: Main      ] - 802.15.4 TSCH channel hopping sequence length: 5
+[INFO: Main      ] - 802.15.4 TSCH default hopping sequence: [ 16 25 17 20 22 ]
+[INFO: Main      ] Node ID: 11 Node Type: 4
+[INFO: Main      ] Link-layer address: 0012.4b00.194a.52a1
+[INFO: Main      ] ----------contiki-main.c: after netstack_init() 
+[INFO: Zoul      ] Zolertia RE-Mote revision B platform
+Orchestra: initializing rule 0
+Orchestra: initialization done
+[INFO: Main      ] contiki-main.c: orchestra_init() called
