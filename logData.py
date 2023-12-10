@@ -8,11 +8,11 @@ def extract(text):
     
     return matches
 
-NODE_CNT = 14
+NODE_CNT = 12
 ROOT_NODE = 1
-LOGFILE_NAME = "log0915-1-RP.txt"
+LOGFILE_NAME = "log-new.txt"
 TYPE_STR = [None, "AP", "Sensor", "Actuator", "Router", "Virtual Sensor"]
-NODE_COLOR = [None, "red", "white", "green", "cyan", "blue"]
+NODE_COLOR = [None, "red", "white", "green", "cyan", "magenta"]
 NODE_EDGECOLOR = ["white", "white", "black", "white", "white", "black"]
 
 root = {}
@@ -63,32 +63,24 @@ for i in range(1, NODE_CNT+1):
     for j in range(i+1, NODE_CNT+1):
         if i==j or outgoing[i][j]==0: continue
         G.add_edge(str(i), str(j))
+        #G.add_edge(str(j), str(i));
         dist[(str(i),str(j))]=outgoing[i][j]
-pos = nx.kamada_kawai_layout(G)
+
+pos = nx.spring_layout(G)
+neighborPos = pos
+
+entireG = G.copy()
+
+kamada_layout = nx.kamada_kawai_layout(entireG)
+spring_layout = nx.spring_layout(entireG)
+
 G.clear();
 G.clear_edges()
 
 for i in range(2, len(parent)):
     G.add_edge(str(i), str(parent[i]))
-neighborPos = pos
+
 
 for i in range(1, NODE_CNT+1):
     G.add_node(str(i), name=i,color=NODE_COLOR[node_type[i]], edge_color=NODE_EDGECOLOR[node_type[i]])
-
-for node_id, _ in pos.items():
-    node_id = int(node_id)
-    if node_type[node_id]==1:
-        colors.append("red")
-        edge_colors.append("white")
-    elif node_type[node_id]==2:
-        colors.append("white")
-        edge_colors.append("black")
-    elif node_type[node_id]==3:
-        colors.append("green")
-        edge_colors.append("white")
-    elif node_type[node_id]==4:
-        colors.append("cyan")
-        edge_colors.append("white")
-    elif node_type[node_id]==5:
-        colors.append("blue")
-        edge_colors.append("black")
+    prr[i] = "NDEF"

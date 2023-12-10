@@ -5,6 +5,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import logData, makeGraph
 
 def nodeSelected(event):
+    if mode.get()==2:return
     global canvas_widget, label, node_number
     if event.button == 1:
         for key in logData.pos.keys():
@@ -83,21 +84,31 @@ def drawRootGraph(G):
     canvas_widget.pack()
 
 def radioButtonPressed():
-    if node_number == logData.ROOT_NODE:
-        return
     if mode.get()==0:
         makeGraph.makeRootGraph(node_number)
         drawRootGraph(logData.rootG)
-    else:
+    elif mode.get()==1:
         makeGraph.makeNeighborGraph(node_number)
         drawNeighborGraph()
+    else:
+        drawRootGraph(logData.entireG)
+
+def layoutRadioButtonPressed():
+    if layout.get()==0:
+        logData.pos = logData.spring_layout
+        logData.neighborPos = logData.pos
+    elif layout.get()==1:
+        logData.pos = logData.kamada_layout
+        logData.neighborPos = logData.pos
+    if mode.get()!=2: radioButtonPressed()
 
 # tkinter 윈도우 생성
 window = tk.Tk()
 window.title("NetworkX Graph")
 mode = tk.IntVar() # root vs neighbor
+layout = tk.IntVar()
 
-node_number = logData.ROOT_NODE
+node_number = 2
 canvas_widget, canvas_widget2 = None, None
 font = ("Pretendard", 12)
 # 그래프를 그릴 Figure 객체 생성
@@ -115,7 +126,14 @@ modeRadio1 = tk.Radiobutton(frame1, text="root node", font=font, variable=mode, 
 modeRadio1.place(x=780, y=25)
 modeRadio2 = tk.Radiobutton(frame1, text="neighbor", font=font, variable=mode, value=1, command=radioButtonPressed)
 modeRadio2.place(x=880, y=25)
+modeRadio2 = tk.Radiobutton(frame1, text="entire map", font=font, variable=mode, value=2, command=radioButtonPressed)
+modeRadio2.place(x=680, y=25)
+
+layoutRadio1 = tk.Radiobutton(frame1, text="layout1", font=font, variable=layout, value=0, command=layoutRadioButtonPressed)
+layoutRadio1.place(x=180, y=0)
+layoutRadio2 = tk.Radiobutton(frame1, text="layout2", font=font, variable=layout, value=1, command=layoutRadioButtonPressed)
+layoutRadio2.place(x=180, y=25)
 
 # tkinter 메인 루프 실행
-drawRootGraph(logData.G)
+drawRootGraph(logData.entireG)
 window.mainloop()
