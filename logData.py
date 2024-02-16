@@ -10,9 +10,9 @@ def extract(text):
 
 NODE_CNT = 12
 ROOT_NODE = 1
-LOGFILE_NAME = "log-new.txt"
+LOGFILE_NAME = "log.txt"
 TYPE_STR = [None, "AP", "Sensor", "Actuator", "Router", "Virtual Sensor"]
-NODE_COLOR = [None, "red", "white", "green", "cyan", "magenta"]
+NODE_COLOR = [None, "red", "blue", "green", "cyan", "orange"]
 NODE_EDGECOLOR = ["white", "white", "black", "white", "white", "black"]
 
 root = {}
@@ -60,9 +60,12 @@ for i in range(1, NODE_CNT+1):
 
 dist = {}
 for i in range(1, NODE_CNT+1):
+    G.add_node(str(i), name=i, color=NODE_COLOR[node_type[i]], edge_color=NODE_EDGECOLOR[node_type[i]])
     for j in range(i+1, NODE_CNT+1):
         if i==j or outgoing[i][j]==0: continue
-        G.add_edge(str(i), str(j))
+        G.add_edge(str(i), str(j))#, weight=incoming[i][j] if incoming[i][j]!=0 else outgoing[i][j])
+        G.add_edge(str(j), str(i))
+        #G.add_edge(str(i), str(j))
         #G.add_edge(str(j), str(i));
         dist[(str(i),str(j))]=outgoing[i][j]
 
@@ -74,7 +77,7 @@ entireG = G.copy()
 kamada_layout = nx.kamada_kawai_layout(entireG)
 spring_layout = nx.spring_layout(entireG)
 
-G.clear();
+G.clear()
 G.clear_edges()
 
 for i in range(2, len(parent)):
@@ -83,4 +86,11 @@ for i in range(2, len(parent)):
 
 for i in range(1, NODE_CNT+1):
     G.add_node(str(i), name=i,color=NODE_COLOR[node_type[i]], edge_color=NODE_EDGECOLOR[node_type[i]])
-    prr[i] = "NDEF"
+    rootG.add_node(str(i), name=i,color=NODE_COLOR[node_type[i]], edge_color=NODE_EDGECOLOR[node_type[i]])
+    prr[i] = "NDEF" if i not in prr.keys() else prr[i]
+
+annotation = {str(i):TYPE_STR[node_type[i]] for i in range(1,NODE_CNT+1)}
+#annotation = {(str(i), str(j)):dict(s="%d/%d"%(incoming[i][j], outgoing[i][j]), font_color = "red") for j in range(i, NODE_CNT+1) for i in range(1, NODE_CNT+1)}
+for i in range(1, NODE_CNT+1):
+    for j in range(1, NODE_CNT+1):
+        annotation[(str(i), str(j))] = dict(s="%d/%d"%(incoming[i][j], outgoing[i][j]), color="red")
