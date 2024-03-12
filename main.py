@@ -5,7 +5,7 @@ from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import logData, makeGraph
 import netgraph
 
-
+fig, ax1, ax2, canvas, I,node_color,weight,nodecolor = None, None, None, None, None, None, None, None
 originalX,originalY,selectedNode = None,None,None
 def clickEvent(event):
     global originalX,originalY,selectedNode
@@ -27,6 +27,7 @@ def releaseEvent(event):
         drawRootGraph(logData.rootG)
     else:drawNeighborGraph()
     originalX,originalY,selectedNode = None,None,None
+    return
 
 def changeLabel(index):
     global label
@@ -35,11 +36,8 @@ def changeLabel(index):
         label["text"] = f"{index}번 노드\n{logData.TYPE_STR[logData.node_type[index]]}\n"
         label["text"] += (f"PRR = {logData.prr[index]}") if logData.node_type[index] == 2 else " "
 
-def drawNeighborGraph():
-    global canvas_widget
-    plt.close()
-    if canvas_widget!=None: canvas_widget.destroy()
-    fig, (ax1,ax2) = plt.subplots(1,2,width_ratios=[1,10],figsize=(18,10))
+def init():
+    global fig,ax1,ax2,canvas,I,node_color,weight,nodecolor
     node_color = nx.get_node_attributes(logData.neighborG, 'color').values()
     weight = nx.get_edge_attributes(logData.neighborG, 'weight')
     nodecolor = {node:"tab:"+nodecolor for node,nodecolor in zip(logData.neighborG.nodes, node_color)}
@@ -81,13 +79,35 @@ def drawNeighborGraph():
     # Canvas 위젯 생성 및 그래프 출력
     canvas_widget = canvas.get_tk_widget()
     canvas_widget.pack()
-    window.mainloop()
+    window.mainloop()   
+
+def drawNeighborGraph():
+    global fig,ax1,ax2,canvas,I,node_color,weight,nodecolor
+    ax2.clear()
+    node_color = nx.get_node_attributes(logData.neighborG, 'color').values()
+    weight = nx.get_edge_attributes(logData.neighborG, 'weight')
+    nodecolor = {node:"tab:"+nodecolor for node,nodecolor in zip(logData.neighborG.nodes, node_color)}
+    I = netgraph.InteractiveGraph(logData.neighborG,
+                              edge_layout='curved',
+                              edge_layout_kwargs=dict(k=0.025),
+                              node_layout=logData.neighborPos,
+                              node_labels=dict(zip(logData.neighborG.nodes,logData.neighborG.nodes)),
+                              node_label_bbox=dict(fc="lightgreen", ec="black", boxstyle="square", lw=3),
+                              node_size=3   ,
+                              node_color=nodecolor,
+                              edge_labels=weight,
+                              scale=(3,3),
+                              annotations = {x:logData.annotation[x] for x in logData.neighborG.edges},
+                              edge_width = 1,
+                              arrows = True,
+                              ax=ax2,
+    )
+    canvas.draw()
+    return
 
 def drawRootGraph(G:nx.Graph):
-    global canvas_widget
-    plt.close()
-    if canvas_widget!=None: canvas_widget.destroy()
-    fig, (ax1,ax2) = plt.subplots(1,2,width_ratios=[1,10],figsize=(18,10))
+    global fig,ax1,ax2,canvas,I,node_color,weight,nodecolor
+    ax2.clear()
     node_color = nx.get_node_attributes(G, 'color').values()
     weight = nx.get_edge_attributes(G, 'weight')
     nodecolor = {node:"tab:"+nodecolor for node,nodecolor in zip(G.nodes, node_color)}
@@ -104,30 +124,8 @@ def drawRootGraph(G:nx.Graph):
                               arrows=True,
                               ax=ax2
     )
-
-    canvas = FigureCanvasTkAgg(fig, master=frame2)
     canvas.draw()
-    fig.canvas.mpl_connect('button_press_event', clickEvent)
-    fig.canvas.mpl_connect('button_release_event', releaseEvent)
-    node_proxy_artists = []
-    for i in range(1,len(logData.NODE_COLOR)):
-        proxy = plt.Line2D(
-            [], [],
-            linestyle='None',
-            color=logData.NODE_COLOR[i],
-            marker='o',
-            markersize=8,
-            label=logData.TYPE_STR[i]
-        )
-        node_proxy_artists.append(proxy)
-
-    node_legend = ax1.legend(handles=node_proxy_artists, loc='upper left', title='Nodes')
-    ax1.add_artist(node_legend)
-    ax1.set_axis_off()
-    # Canvas 위젯 생성 및 그래프 출력
-    canvas_widget = canvas.get_tk_widget()
-    canvas_widget.pack()
-    window.mainloop()
+    return
     
 
 def radioButtonPressed():
@@ -139,6 +137,7 @@ def radioButtonPressed():
         drawNeighborGraph()
     else:
         drawRootGraph(logData.entireG)
+    return
 
 # tkinter 윈도우 생성
 window = tk.Tk()
@@ -168,5 +167,6 @@ modeRadio2.place(x=680, y=25)
 # tkinter 메인 루프 실행
 logData.neighborG = logData.G
 logData.neighborPos = logData.pos#nx.spring_layout(logData.neighborG)
-drawRootGraph(logData.entireG)
-window.mainloop()
+
+fig, (ax1,ax2) = plt.subplots(1,2,width_ratios=[1,10],figsize=(18,10))
+init()
