@@ -1,7 +1,7 @@
 import networkx as nx
 import re
 from time import sleep
-import threading
+import threading, serial
 
 def extract(text):
     pattern = r'\((.*?)\)'  # 괄호 안에 있는 값을 추출하기 위한 정규 표현식
@@ -38,9 +38,41 @@ class LogData:
         self.NODE_TYPE = [None, "AP", "Sensor", "Actuator", "Router", "Virtual Sensor"]
         self.NODE_COLOR = [None, "red", "blue", "green", "cyan", "orange"]
         self.NODE_EDGECOLOR = ["white", "white", "black", "white", "white", "black"]
+    # Serial Communication
+    def serial(self):
+        PORT = "/dev/ttyUSB0"
+        BAUD_RATE = 57600
+        NUMBER_OF_NODES = 11
+        f = open(self.LOGFILE_NAME, "w")
+        try:
+            fd = serial.Serial(PORT, BAUD_RATE)
+        except serial.serialutil.SerialException:
+            print("Unable to open serial device")
+            self.event.set()
+            return
+        print("PORT OPEN SUCCESS")
+        while True:
+            if not fd.readable(): continue
+            line = fd.readline()
+            print(f"PORT0: {line}")
+            f.write(line); f.flush()
+            if line.find("ZZIOT READY")!=-1: break
+        
+        while True:
+            if input("ZZIOT is ready: start now? (Y/N): ")=="Y":break
+        fd.write("START")
+        print("Server sent START command")
+
+        while True:
+            if not fd.readable(): sleep(0.5)
+            line = fd.readline()
+            print(f"PORT0: {line}")
+            f.write(line); f.flush()
+
     # Get Node Information
     def getNodeInfo(self):
         while True:
+            if self.event.is_set():return
             line = self.F.readline()
             if len(line)==0: sleep(1)
             if line.find("add new NBR")!=-1: self.node_cnt += 1
@@ -53,6 +85,7 @@ class LogData:
         self.node_type = [0 for _ in range(self.node_cnt+1)]
         self.child_cnt = [0 for _ in range(self.node_cnt+1)]
         while True:
+            if self.event.is_set():return
             line = self.F.readline()
             if len(line)==0: sleep(1)
             if line.startswith("[N]") or line.startswith("[+]"):

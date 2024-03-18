@@ -10,15 +10,20 @@ def refreshPrr():
         drawGraph.prrText.set_text(ld.prrStr)
         drawGraph.canvas.draw()
 
+thread1 = threading.Thread(target=ld.serial)
+thread1.start()
+
 ld.getNodeInfo()
+if ld.event.is_set():
+    exit()
 print("get node data done")
 ld.getTreeInfo()
 print("get tree info done")
 
-thread1 = threading.Thread(target=ld.getNodeData)
-thread1.start()
-thread2 = threading.Thread(target=refreshPrr)
+thread2 = threading.Thread(target=ld.getNodeData)
 thread2.start()
+thread3 = threading.Thread(target=refreshPrr)
+thread3.start()
 drawGraph.init()
 print("drawing graph...")
 drawGraph.start()
