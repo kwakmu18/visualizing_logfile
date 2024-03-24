@@ -12,22 +12,27 @@ def extract(text):
 
 class LogData:
     # Class initialize
-    def __init__(self, filename, tk):
+    def __init__(self, filename):
         self.node_cnt = 1
         self.G = nx.Graph()
         self.rootG = nx.DiGraph()
         self.neighborG = nx.Graph()
+        self.entireG = None
+        self.colors = []
+        self.edge_colors = []
+        self.pos = None
+        self.neighborPos = None
         self.ranks = {}
         self.annotation = {}
         self.prr = {}
         self.event = threading.Event()
         self.ROOT_NODE = 1
         self.LOGFILE_NAME = filename
+        self.F = open(self.LOGFILE_NAME, "r")
         self.NODE_TYPE = [None, "AP", "Sensor", "Actuator", "Router", "Virtual Sensor"]
         self.NODE_COLOR = [None, "red", "blue", "green", "cyan", "orange"]
         self.NODE_EDGECOLOR = ["white", "white", "black", "white", "white", "black"]
         self.maxSequence = 1
-        self.tk = tk
     def setDG(self, dg):
         self.dg = dg
 
@@ -43,7 +48,7 @@ class LogData:
             self.outgoing[root_id][child_id]=child_outgoing
 
     def graphInfo(self):
-        self.activate = [True for _ in range(self.node_cnt+1)]
+        self.activate = {True for _ in range(self.node_cnt+1)}
         for i in range(1, self.node_cnt+1):
             self.G.add_node(str(i), name=i, color=self.NODE_COLOR[self.node_type[i]], edge_color=self.NODE_EDGECOLOR[self.node_type[i]])
             for j in range(i+1, self.node_cnt+1):
@@ -91,22 +96,21 @@ class LogData:
         try:
             fd = serial.Serial(PORT, BAUD_RATE)
         except serial.serialutil.SerialException:
-            self.appendLog("Unable to open serial device")
+            print("Unable to open serial device")
             self.event.set()
             return
-        self.appendLog("PORT OPEN SUCCESS")
+        print("PORT OPEN SUCCESS")
         while True:
             if not fd.readable(): continue
             line = fd.readline()
-            self.appendLog(line.decode())
+            print(f"PORT0: {line}")
             f.write(line); f.flush()
             if line.find("ZZIOT READY")!=-1: break
         
         while True:
-            if input("ZZIOT is ready: start now? (Y/N): ")=="Y":
-                fd.write("START")
-                break
-        self.appendLog("Server sent START command")
+            if input("ZZIOT is ready: start now? (Y/N): ")=="Y":break
+        fd.write("START")
+        print("Server sent START command")
 
         while True:
             if not fd.readable(): sleep(0.5)
@@ -116,24 +120,25 @@ class LogData:
         
     def processLine(self, line:bytes):
         line = line.decode()
-        self.appendLog(line)
+        self.dg.lbox.insert(tk.END, line)
+        self.dg.lbox.update()
+        self.dg.lbox.see(tk.END)
         if line.find("add new NBR")!=-1:
             self.node_cnt += 1
-            self.tk.statusText.set_text(f"{self.node_cnt} nodes standby")
-            self.tk.canvas.draw()
+            self.dg.statusText.set_text(f"{self.node_cnt} nodes standby")
+            self.dg.canvas.draw()
         elif line.find("all PROBE_PRR packets sent")!=-1:
             self.incoming = [[0 for _ in range(self.node_cnt+1)] for _ in range(self.node_cnt+1)]
             self.outgoing = [[0 for _ in range(self.node_cnt+1)] for _ in range(self.node_cnt+1)]
             self.parent = [0 for _ in range(self.node_cnt+1)]
             self.node_type = [0 for _ in range(self.node_cnt+1)]
             self.child_cnt = [0 for _ in range(self.node_cnt+1)]
-            self.tk.statusText.set_text(f"{self.node_cnt} nodes ready")
-            self.tk.canvas.draw()
+            self.dg.statusText.set_text(f"{self.node_cnt} nodes ready")
+            self.dg.canvas.draw()
         elif line.startswith("[N]") or line.startswith("[+]"):
             self.nodeInfo(line)
         elif line.find("===END-OF-NI===")!=-1:
             self.graphInfo()
-            self.tk.resetLayoutButton["state"] = "active"
         elif line.startswith("[D]"):
             line = line.split(":")
             index = int(line[2])
@@ -145,7 +150,3 @@ class LogData:
             self.prr[index][0]+=1
             self.prr[index][1]=now
             self.dg.changeLabel()
-    def appendLog(self, line):
-        self.tk.lbox.insert(tk.END, line)
-        self.tk.lbox.update()
-        self.tk.lbox.see(tk.END)

@@ -1,185 +1,98 @@
-import tkinter as tk
 import networkx as nx
-import matplotlib.pyplot as plt
-from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 import makeGraph
 import netgraph
-from logData import ld
+class DrawGraph:
+    def __init__(self, tk, ld):
+        self.ld = ld
+        self.ld.dg = self
+        self.selectedNode = 1
+        self.font = ("Pretendard", 12)
+        self.tk = tk
 
-fig = None
-ax1, ax2 = None, None
-canvas = None
-I = None
-node_color,weight,nodecolor = None, None, None
-prrText = None
-originalX,originalY,selectedNode = None,None,None
-window = None
-node_number = None
-font = ("Pretendard", 12)
-label = None
+    def clickEvent(self, event):
+        for node in self.ld.neighborPos.keys():
+            x,y = self.ld.neighborPos[node]
+            if (x-event.xdata)**2 + (y-event.ydata)**2<=0.02:
+                self.originalX = x
+                self.originalY = y
+                self.selectedNode = int(node)
+                return
 
-def clickEvent(event):
-    global originalX,originalY,selectedNode
-    for node in ld.neighborPos.keys():
-        x,y = ld.neighborPos[node]
-        if (x-event.xdata)**2 + (y-event.ydata)**2 <= 0.02:
-            originalX,originalY,selectedNode=x,y,node
-            return
+    def releaseEvent(self, event):
+        if self.selectedNode==None or self.tk.mode.get()==2: return
+        if (self.originalX - event.xdata)**2 + (self.originalY - event.ydata)**2 > 0.0005:return
+        makeGraph.makeNeighborGraph(self.ld, self.selectedNode)
+        if self.tk.mode.get()==0:
+            makeGraph.makeRootGraph(self.ld, self.selectedNode)
+            self.drawRootGraph()
+        else:
+            self.drawNeighborGraph()
+        
+        if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="Sensor":
+            self.tk.activateButton["state"] = "active"
+            if self.ld.activate[self.selectedNode]:
+                self.tk.activateButton["text"] = "Deactivate Node"
+            else:
+                self.tk.activateButton["text"] = "Activate Node"
+        else:
+            self.tk.activateButton["state"] = "disabled"
 
-def releaseEvent(event):
-    global originalX,originalY,selectedNode,node_number
-    if selectedNode==None or mode.get()==2:return
-    if (originalX-event.xdata)**2 + (originalY-event.ydata)**2>0.0005:return
-    makeGraph.makeNeighborGraph(int(selectedNode))
-    node_number = int(selectedNode)
-    changeLabel(int(selectedNode))
-    if mode.get()==0:
-        makeGraph.makeRootGraph(int(selectedNode))
-        drawRootGraph(ld.rootG)
-    else:drawNeighborGraph()
-    originalX,originalY,selectedNode = None,None,None
-    return
+        self.changeLabel()
+        self.originalX = None
+        self.originalY = None
 
-def changeLabel(index):
-    global label
-    if index==ld.ROOT_NODE: label["text"]="map\n \n "
-    else:
-        label["text"] = f"{index}번 노드\n{ld.NODE_TYPE[ld.node_type[index]]}\n"
-        label["text"] += (f"PRR = {ld.prr[index]}") if ld.node_type[index] == 2 else " "
+    def changeLabel(self):
+        if self.selectedNode == None: return
+        try:
+            self.tk.nodeInfoLabel["text"] = f"{self.selectedNode}번 노드\n"
+            self.tk.nodeInfoLabel["text"] += f"{self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]}\n"
+            if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="Sensor" and self.selectedNode in self.ld.prr.keys():
+                self.tk.nodeInfoLabel["text"] += f"{int(self.ld.prr[self.selectedNode][0]*10000/self.ld.prr[self.selectedNode][1])-1}"
+                self.tk.nodeInfoLabel["text"] += f"({self.ld.prr[self.selectedNode][0]}/{self.ld.prr[self.selectedNode][1]})"
+        except KeyError:
+            self.changeLabel()
 
-def start():
-    global fig,ax1,ax2,canvas,I,node_color,weight,nodecolor,prrText
-    node_color = nx.get_node_attributes(ld.neighborG, 'color').values()
-    weight = nx.get_edge_attributes(ld.neighborG, 'weight')
-    nodecolor = {node:"tab:"+nodecolor for node,nodecolor in zip(ld.neighborG.nodes, node_color)}
-    I = netgraph.InteractiveGraph(ld.neighborG,
-                              edge_layout='curved',
-                              edge_layout_kwargs=dict(k=0.025),
-                              node_layout=ld.neighborPos,
-                              node_labels=dict(zip(ld.neighborG.nodes,ld.neighborG.nodes)),
-                              node_label_bbox=dict(fc="lightgreen", ec="black", boxstyle="square", lw=3),
-                              node_size=3   ,
-                              node_color=nodecolor,
-                              edge_labels=weight,
-                              scale=(3,3),
-                              annotations = {x:ld.annotation[x] for x in ld.neighborG.edges},
-                              edge_width = 1,
-                              arrows = True,
-                              ax=ax2,
-    )
-    fig.canvas.mpl_connect('button_press_event', clickEvent)
-    fig.canvas.mpl_connect('button_release_event', releaseEvent)
-    node_proxy_artists = []
-    for i in range(1,len(ld.NODE_COLOR)):
-        proxy = plt.Line2D(
-            [], [],
-            linestyle='None',
-            color=ld.NODE_COLOR[i],
-            marker='o',
-            markersize=8,
-            label=ld.NODE_TYPE[i]
+    def drawNeighborGraph(self):
+        self.tk.ax2.clear()
+        self.node_color = nx.get_node_attributes(self.ld.neighborG, 'color').values()
+        self.weight = nx.get_edge_attributes(self.ld.neighborG, 'weight')
+        self.nodecolor = {node:"tab:"+nodecolor for node,nodecolor in zip(self.ld.neighborG.nodes, self.node_color)}
+        self.I = netgraph.InteractiveGraph(self.ld.neighborG,
+                                edge_layout='curved',
+                                edge_layout_kwargs=dict(k=0.025),
+                                node_layout=self.ld.neighborPos,
+                                node_labels=dict(zip(self.ld.neighborG.nodes,self.ld.neighborG.nodes)),
+                                node_label_bbox=dict(fc="lightgreen", ec="black", boxstyle="square", lw=3),
+                                node_size=3   ,
+                                node_color=self.nodecolor,
+                                edge_labels=self.weight,
+                                scale=(3,3),
+                                annotations = {x:self.ld.annotation[x] for x in self.ld.neighborG.edges},
+                                edge_width = 1,
+                                arrows = True,
+                                ax=self.tk.ax2,
         )
-        node_proxy_artists.append(proxy)
+        self.tk.canvas.draw()
+        return
 
-    node_legend = ax1.legend(handles=node_proxy_artists, loc='upper left', title='Nodes')
-    ax1.add_artist(node_legend)
-    ax1.set_axis_off()
-    prrText = ax1.text(0.5, 0.5, "")
-    canvas = FigureCanvasTkAgg(fig, master=frame2)
-    canvas.draw()
-
-    # Canvas 위젯 생성 및 그래프 출력
-    canvas_widget = canvas.get_tk_widget()
-    canvas_widget.pack()
-    window.mainloop()   
-
-def drawNeighborGraph():
-    global fig,ax1,ax2,canvas,I,node_color,weight,nodecolor
-    ax2.clear()
-    node_color = nx.get_node_attributes(ld.neighborG, 'color').values()
-    weight = nx.get_edge_attributes(ld.neighborG, 'weight')
-    nodecolor = {node:"tab:"+nodecolor for node,nodecolor in zip(ld.neighborG.nodes, node_color)}
-    I = netgraph.InteractiveGraph(ld.neighborG,
-                              edge_layout='curved',
-                              edge_layout_kwargs=dict(k=0.025),
-                              node_layout=ld.neighborPos,
-                              node_labels=dict(zip(ld.neighborG.nodes,ld.neighborG.nodes)),
-                              node_label_bbox=dict(fc="lightgreen", ec="black", boxstyle="square", lw=3),
-                              node_size=3   ,
-                              node_color=nodecolor,
-                              edge_labels=weight,
-                              scale=(3,3),
-                              annotations = {x:ld.annotation[x] for x in ld.neighborG.edges},
-                              edge_width = 1,
-                              arrows = True,
-                              ax=ax2,
-    )
-    canvas.draw()
-    return
-
-def drawRootGraph(G:nx.Graph):
-    global fig,ax1,ax2,canvas,I,node_color,weight,nodecolor
-    ax2.clear()
-    node_color = nx.get_node_attributes(G, 'color').values()
-    weight = nx.get_edge_attributes(G, 'weight')
-    nodecolor = {node:"tab:"+nodecolor for node,nodecolor in zip(G.nodes, node_color)}
-    I = netgraph.InteractiveGraph(G,
-                              node_layout=ld.neighborPos,
-                              node_labels=dict(zip(G.nodes,G.nodes)),
-                              node_label_bbox=dict(fc="lightgreen", ec="black", boxstyle="square", lw=3),
-                              node_size=3   ,
-                              node_color=nodecolor,
-                              edge_labels=weight,
-                              scale=(100,100),
-                              annotations = {x:ld.annotation[x] for x in G.edges},
-                              edge_width = 1,
-                              arrows=True,
-                              ax=ax2
-    )
-    canvas.draw()
-    return
-    
-
-def radioButtonPressed():
-    if mode.get()==0:
-        makeGraph.makeRootGraph(node_number)
-        drawRootGraph(ld.rootG)
-    elif mode.get()==1:
-        makeGraph.makeNeighborGraph(node_number)
-        drawNeighborGraph()
-    else:
-        drawRootGraph(ld.entireG)
-    return
-
-def terminate():
-    ld.event.set()
-    window.destroy()
-
-def init():
-    global window, mode, frame1, frame2, fig, ax1, ax2, node_number, label
-    window = tk.Tk()
-    window.protocol("WM_DELETE_WINDOW", terminate)
-    window.title("NetworkX Graph")
-    mode = tk.IntVar(value=2) # root vs neighbor
-
-    node_number = 2
-
-    frame1 = tk.Frame(window, width=1000, height=50)
-    frame1.pack(side="top")
-
-    frame2 = tk.Frame(window, width=1000)
-    frame2.pack(side="bottom")
-    label = tk.Label(frame1, text="map\n \n ", font=font)
-    label.place(x=450, y=0, width=100, height=50)
-
-    modeRadio1 = tk.Radiobutton(frame1, text="root node", font=font, variable=mode, value=0, command=radioButtonPressed, )
-    modeRadio1.place(x=780, y=25)
-    modeRadio2 = tk.Radiobutton(frame1, text="neighbor", font=font, variable=mode, value=1, command=radioButtonPressed)
-    modeRadio2.place(x=880, y=25)
-    modeRadio2 = tk.Radiobutton(frame1, text="entire map", font=font, variable=mode, value=2, command=radioButtonPressed)
-    modeRadio2.place(x=680, y=25)
-
-    ld.neighborG = ld.G
-    ld.neighborPos = ld.pos#nx.spring_layout(ld.neighborG)
-
-    fig, (ax1,ax2) = plt.subplots(1,2,width_ratios=[1,10],figsize=(18,10))
+    def drawRootGraph(self):
+        G = self.ld.rootG if self.tk.mode.get()==0 else self.ld.entireG
+        self.tk.ax2.clear()
+        self.node_color = nx.get_node_attributes(G, 'color').values()
+        self.weight = nx.get_edge_attributes(G, 'weight')
+        self.nodecolor = {node:"tab:"+nodecolor for node,nodecolor in zip(G.nodes, self.node_color)}
+        self.I = netgraph.InteractiveGraph(G,
+                                node_layout=self.ld.neighborPos,
+                                node_labels=dict(zip(G.nodes,G.nodes)),
+                                node_label_bbox=dict(fc="lightgreen", ec="black", boxstyle="square", lw=3),
+                                node_size=3   ,
+                                node_color=self.nodecolor,
+                                edge_labels=self.weight,
+                                scale=(100,100),
+                                annotations = {x:self.ld.annotation[x] for x in G.edges},
+                                edge_width = 1,
+                                arrows=True,
+                                ax=self.tk.ax2
+        )
+        self.tk.canvas.draw()
+        return
