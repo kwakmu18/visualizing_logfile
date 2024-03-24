@@ -23,7 +23,7 @@ class LogData:
         self.event = threading.Event()
         self.ROOT_NODE = 1
         self.LOGFILE_NAME = filename
-        self.NODE_TYPE = [None, "AP", "Sensor", "Actuator", "Router", "Virtual Sensor"]
+        self.NODE_TYPE = [None, "AP", "SENSOR", "ACTUATOR", "ROUTER", "VSENSOR"]
         self.NODE_COLOR = [None, "red", "blue", "green", "cyan", "orange"]
         self.NODE_EDGECOLOR = ["white", "white", "black", "white", "white", "black"]
         self.maxSequence = 1

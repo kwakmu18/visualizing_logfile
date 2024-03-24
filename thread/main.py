@@ -1,6 +1,7 @@
 import drawGraph, logData, makeGraph
 import threading, os, serial, networkx as nx
 import tkinter as tk
+import tkinter.ttk as ttk
 import tkinter.messagebox as msgbox
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -51,18 +52,23 @@ class TkinterUI:
         self.nodeInfoLabel.place(x=170, y=10)
 
         self.startButton = tk.Button(self.frame1, text="START", font=self.font, command=self.startButtonPressed)
-        self.stopButton = tk.Button(self.frame1, text="STOP", font=self.font, command=self.stopButtonPressed)
+        self.menuButton = tk.Menubutton(self.frame1, text="Menu", font=self.font, relief="raised")
         self.resetLayoutButton = tk.Button(self.frame1, text="Reset Layout", font=self.font, command=self.resetLayoutButtonPressed)
         self.activateButton = tk.Button(self.frame1, text="Deactivate Node", font=self.font, command = self.activateButtonPressed)
+
         self.startButton.place(x=0, y=100, width=200, height=50)
-        self.stopButton.place(x=200, y=100, width=200, height=50)
+        self.menuButton.place(x=200, y=100, width=200, height=50)
         self.resetLayoutButton.place(x=0, y=150, width=200, height=50)
         self.activateButton.place(x=200, y=150, width=200, height=50)
-        self.stopButton["state"] = "disabled"
+
         self.resetLayoutButton["state"] = "disabled"
         self.activateButton["state"] = "disabled"
-        self.isReset = tk.IntVar()
 
+        self.menu = tk.Menu(self.menuButton, tearoff=0, relief="flat")
+        self.menu.add_command(label="Binary Upload", command=self.binaryUpload)
+        self.menuButton["menu"] = self.menu
+
+        self.isReset = tk.IntVar()
         self.resetLogCheckBox = tk.Checkbutton(self.frame1, text="reset log file", font=self.font, variable=self.isReset)
         self.resetLogCheckBox.place(x=0, y=225)
         # ------------------------------------------------ Configure UI ------------------------------------------------ #
@@ -140,12 +146,121 @@ class TkinterUI:
             serialThread = threading.Thread(target=self.ld.logfile)
         serialThread.start()
         self.startButton["state"] = "disabled"
-        self.stopButton["state"] = "active"
-    def stopButtonPressed(self):
-        self.ld.event.set()
+    def binaryUpload(self):
+        top = tk.Toplevel(self.window)
+        top.geometry("400x300")
+        top.title("Binary Upload")
+        self.contiki_path, self.node_cnt, self.actuator_id, self.node_id, self.node_type, self.data_cnt = \
+            (tk.StringVar() for _ in range(6))
+        contiki_path_label = tk.Label(top, text="Contiki-NG Path : ", font=self.font)
+        contiki_path_input = tk.Entry(top, textvariable = self.contiki_path)
+        node_cnt_label = tk.Label(top, text="Node Cnt : ", font=self.font)
+        node_cnt_input = tk.Entry(top, textvariable=self.node_cnt)
+        actuator_id_label = tk.Label(top, text="Actuator ID : ", font=self.font)
+        actuator_id_input = tk.Entry(top, textvariable=self.actuator_id)
+        node_id_label = tk.Label(top, text="Node ID : ", font=self.font)
+        node_id_input = tk.Entry(top, textvariable=self.node_id)
+        node_type_label = tk.Label(top, text="Node Type : ", font=self.font)
+        node_type_input = ttk.Combobox(top, values=self.ld.NODE_TYPE[1:], textvariable=self.node_type)
+        data_cnt_label = tk.Label(top, text="Data Cnt : ", font=self.font)
+        data_cnt_input = tk.Entry(top, textvariable=self.data_cnt)
+
+        contiki_path_input.insert(0, "/home/mckkk119/CNLAB_EV/contiki-ng")
+        node_cnt_input.insert(0, "4")
+        actuator_id_input.insert(0, "3")
+        node_id_input.insert(0, "1")
+        data_cnt_input.insert(0, "100")
+        node_type_input.insert(0, "AP")
+
+        contiki_path_label.place(x=10, y=10)
+        contiki_path_input.place(x=120, y=10, width=260, height=25)
+        node_cnt_label.place(x=10, y=45)
+        node_cnt_input.place(x=120, y=45, width=260, height=25)
+        actuator_id_label.place(x=10, y=80)
+        actuator_id_input.place(x=120, y=80, width=260, height=25)
+        node_id_label.place(x=10, y=115)
+        node_id_input.place(x=120, y=115, width=260, height=25)
+        node_type_label.place(x=10, y=150)
+        node_type_input.place(x=120, y=150, width=260, height=25)
+        data_cnt_label.place(x=10, y=185)
+        data_cnt_input.place(x=120, y=185, width=260, height=25)
+
+        uploadButton = tk.Button(top, text="Upload to node", command=self.upload, font=self.font)
+        uploadButton.place(x=10, y=220, width=380, height=70)
+    def upload(self):
+        if not DEBUG_MODE:
+            try:
+                serial.Serial(PORT, BAUD_RATE)
+            except serial.serialutil.SerialException:
+                msgbox.showwarning("ERROR", "Device is not ready.")
+                return
+        if self.contiki_path.get()=="" or self.node_cnt.get()=="" or self.actuator_id.get()=="" \
+            or self.node_id.get()=="" or self.node_type.get()=="" or self.data_cnt.get()=="":
+            msgbox.showwarning("ERROR", "Make sure all boxes are filled.")
+            return
+        try:
+            content = ""
+            with open(self.contiki_path.get()+"/os/contiki-main.c", "r") as f:
+                lines = f.readlines()
+                for line in lines:
+                    if line.find("#define NODE_ID")!=-1:
+                        content += f"#define NODE_ID {self.node_id.get()}\n"
+                    elif line.find("#define NODE_TYPE")!=-1:
+                        content += f"#define NODE_TYPE {self.node_type.get()}\n"
+                    elif line.find("uint8_t actuator_node_id = ")!=-1:
+                        content += f"uint8_t actuator_node_id = {self.actuator_id.get()};\n"
+                    else:
+                        content += line
+            with open(self.contiki_path.get()+"/os/contiki-main.c", "w") as f:
+                f.write(content)
+
+            content = ""
+            with open(self.contiki_path.get()+"/os/net/mac/tsch/cnlab-protocol.c", "r") as f:
+                lines = f.readlines()
+                for line in lines:
+                    if line.find("#define NUMBER_OF_DATA ")!=-1:
+                        content += f"#define NUMBER_OF_DATA {self.data_cnt.get()}    //---mkkim0723: MUSTBE = NUMBER_OF_SENSOR_DATA in node.c\n"
+                    else:
+                        content += line
+            with open(self.contiki_path.get()+"/os/net/mac/tsch/cnlab-protocol.c", "w") as f:
+                f.write(content)
+
+            content = ""
+            with open(self.contiki_path.get()+"/../CNLAB_PROTOCOL_DOWNLINK/node.c", "r") as f:
+                lines = f.readlines()
+                for line in lines:
+                    if line.find("#define NUMBER_OF_SENSOR_DATA")!=-1:
+                        content += f"#define NUMBER_OF_SENSOR_DATA  {self.data_cnt.get()}        //---MUSTBE = NUMBER_OF_DATA in cnlab-protocol.c\n"
+                    else:
+                        content += line
+            with open(self.contiki_path.get()+"/../CNLAB_PROTOCOL_DOWNLINK/node.c", "w") as f:
+                f.write(content)
+            
+            content = ""
+            with open(self.contiki_path.get()+"/os/sys/node-id.h", "r") as f:
+                lines = f.readlines()
+                for line in lines:
+                    if line.find("#define NUMBER_OF_NODES  ")!=-1:
+                        content += f"#define NUMBER_OF_NODES  {self.node_cnt.get()}\n"
+                    else:
+                        content += line
+            with open(self.contiki_path.get()+"/os/sys/node-id.h", "w") as f:
+                f.write(content)
+        except FileNotFoundError:
+            msgbox.showwarning("ERROR", "Contiki-NG Path is wrong.")
+            return
+        
+        if os.system(f"cd {self.contiki_path.get()}" + "CNLAB_PROTOCOL_DOWNLINK" + "_AP" if self.node_type.get()=="AP" else "" \
+                  + "; make TARGET=zoul; make TARGET=zoul" + " ap.upload" if self.node_type.get()=="AP" else " node.upload" \
+                    + " PORT=/dev/ttyUSB0")==0:
+            msgbox.showinfo("Info", "Node Upload Success!")
+        else:
+            msgbox.showwarning("ERROR", "Node Upload Failed.")
+
     def resetLayoutButtonPressed(self):
         self.ld.neighborPos = nx.spring_layout(self.ld.entireG)
         self.dg.drawNeighborGraph()
+
     def activateButtonPressed(self):
         pass
 TkinterUI()

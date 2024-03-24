@@ -28,7 +28,7 @@ class DrawGraph:
         else:
             self.drawNeighborGraph()
         
-        if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="Sensor":
+        if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="SENSOR":
             self.tk.activateButton["state"] = "active"
             if self.ld.activate[self.selectedNode]:
                 self.tk.activateButton["text"] = "Deactivate Node"
@@ -46,7 +46,7 @@ class DrawGraph:
         try:
             self.tk.nodeInfoLabel["text"] = f"{self.selectedNode}번 노드\n"
             self.tk.nodeInfoLabel["text"] += f"{self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]}\n"
-            if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="Sensor" and self.selectedNode in self.ld.prr.keys():
+            if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="SENSOR" and self.selectedNode in self.ld.prr.keys():
                 self.tk.nodeInfoLabel["text"] += f"{int(self.ld.prr[self.selectedNode][0]*10000/self.ld.prr[self.selectedNode][1])-1}"
                 self.tk.nodeInfoLabel["text"] += f"({self.ld.prr[self.selectedNode][0]}/{self.ld.prr[self.selectedNode][1]})"
         except KeyError:
