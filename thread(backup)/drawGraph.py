@@ -28,7 +28,7 @@ class DrawGraph:
         else:
             self.drawNeighborGraph()
         
-        if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="VSENSOR":
+        if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="SENSOR":
             self.tk.activateButton["state"] = "active"
             if self.ld.activate[self.selectedNode]:
                 self.tk.activateButton["text"] = "Deactivate Node"
@@ -46,7 +46,7 @@ class DrawGraph:
         try:
             self.tk.nodeInfoLabel["text"] = f"{self.selectedNode}번 노드\n"
             self.tk.nodeInfoLabel["text"] += f"{self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]}\n"
-            if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="VSENSOR" and self.selectedNode in self.ld.prr.keys():
+            if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="SENSOR" and self.selectedNode in self.ld.prr.keys():
                 self.tk.nodeInfoLabel["text"] += f"{int(self.ld.prr[self.selectedNode][0]*10000/self.ld.prr[self.selectedNode][1])-1}"
                 self.tk.nodeInfoLabel["text"] += f"({self.ld.prr[self.selectedNode][0]}/{self.ld.prr[self.selectedNode][1]})"
         except KeyError:
@@ -54,8 +54,6 @@ class DrawGraph:
 
     def drawNeighborGraph(self):
         self.tk.ax2.clear()
-        self.tk.fig.canvas.mpl_connect('button_press_event', self.clickEvent)
-        self.tk.fig.canvas.mpl_connect('button_release_event', self.releaseEvent)
         self.node_color = nx.get_node_attributes(self.ld.neighborG, 'color').values()
         self.weight = nx.get_edge_attributes(self.ld.neighborG, 'weight')
         self.nodecolor = {node:"tab:"+nodecolor for node,nodecolor in zip(self.ld.neighborG.nodes, self.node_color)}
@@ -74,7 +72,7 @@ class DrawGraph:
                                 arrows = True,
                                 ax=self.tk.ax2,
         )
-        self.tk.canvas.draw_idle()
+        self.tk.canvas.draw()
         return
 
     def drawRootGraph(self):
@@ -96,5 +94,5 @@ class DrawGraph:
                                 arrows=True,
                                 ax=self.tk.ax2
         )
-        self.tk.canvas.draw_idle()
+        self.tk.canvas.draw()
         return

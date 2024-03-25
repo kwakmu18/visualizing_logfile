@@ -6,8 +6,6 @@ import tkinter.messagebox as msgbox
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib import gridspec
-import subprocess
-import faulthandler; faulthandler.enable()
 
         # ------------------------------------------------- Constants ----------------------------------------------- #
 FILENAME = "log.txt"
@@ -103,8 +101,11 @@ class TkinterUI:
         self.ax2.set_axis_off()
         self.statusText = self.ax2.text(0.5, 0.5, "ZZIOT READY")
 
+        self.fig.canvas.mpl_connect('button_press_event', self.dg.clickEvent)
+        self.fig.canvas.mpl_connect('button_release_event', self.dg.releaseEvent)
+
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.frame2)
-        self.canvas.draw_idle()
+        self.canvas.draw()
 
         #Canvas 위젯 생성 및 그래프 출력
         self.canvas_widget = self.canvas.get_tk_widget()
@@ -131,11 +132,9 @@ class TkinterUI:
 
     def startButtonPressed(self):
         if self.isReset.get():
-            try:
-                os.remove(FILENAME)
-                with open(FILENAME, "w") as f: pass
-            except FileNotFoundError:
-                with open(FILENAME, "w") as f: pass
+            os.remove(FILENAME)
+            with open(FILENAME, "w") as f:
+                pass
         if not DEBUG_MODE:
             try:
                 serial.Serial(PORT, BAUD_RATE)
@@ -149,7 +148,7 @@ class TkinterUI:
         self.startButton["state"] = "disabled"
     def binaryUpload(self):
         top = tk.Toplevel(self.window)
-        top.geometry("400x600")
+        top.geometry("400x300")
         top.title("Binary Upload")
         self.contiki_path, self.node_cnt, self.actuator_id, self.node_id, self.node_type, self.data_cnt = \
             (tk.StringVar() for _ in range(6))
@@ -188,10 +187,6 @@ class TkinterUI:
 
         uploadButton = tk.Button(top, text="Upload to node", command=self.upload, font=self.font)
         uploadButton.place(x=10, y=220, width=380, height=70)
-
-        self.uploadLog = tk.Listbox(top)
-        self.uploadLog.place(x=10, y=300, width=380, height=280)
-
     def upload(self):
         if not DEBUG_MODE:
             try:
@@ -254,24 +249,13 @@ class TkinterUI:
         except FileNotFoundError:
             msgbox.showwarning("ERROR", "Contiki-NG Path is wrong.")
             return
-        cwd = f"{self.contiki_path.get()}" + "/../CNLAB_PROTOCOL_DOWNLINK" + ("_AP" if self.node_type.get()=="AP" else "")
-        cmd = ["make", "TARGET=zoul"]
-        with subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1, text=True, cwd=cwd) as proc:
-            while True:
-                line = proc.stdout.readline()
-                if not line:break
-                self.appendLog(line)
-        cmd = ["sudo", "make", "TARGET=zoul", "ap.upload" if self.node_type.get()=="AP" else "node.upload", "PORT=/dev/ttyUSB0"]
-        with subprocess.Popen(cmd, stdout=subprocess.PIPE, bufsize=1, text=True, cwd=cwd) as proc:
-            while True:
-                line = proc.stdout.readline()
-                if not line:break
-                self.appendLog(line)
-
-    def appendLog(self, line):
-        self.uploadLog.insert(tk.END, line)
-        self.uploadLog.update()
-        self.uploadLog.see(tk.END)
+        
+        if os.system(f"cd {self.contiki_path.get()}" + "CNLAB_PROTOCOL_DOWNLINK" + "_AP" if self.node_type.get()=="AP" else "" \
+                  + "; make TARGET=zoul; make TARGET=zoul" + " ap.upload" if self.node_type.get()=="AP" else " node.upload" \
+                    + " PORT=/dev/ttyUSB0")==0:
+            msgbox.showinfo("Info", "Node Upload Success!")
+        else:
+            msgbox.showwarning("ERROR", "Node Upload Failed.")
 
     def resetLayoutButtonPressed(self):
         self.ld.neighborPos = nx.spring_layout(self.ld.entireG)

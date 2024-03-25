@@ -71,6 +71,7 @@ class LogData:
         for i in range(1, self.node_cnt+1):
             for j in range(1, self.node_cnt+1):
                 self.annotation[(str(i), str(j))] = dict(s="%d/%d"%(self.incoming[i][j], self.outgoing[i][j]), color="red")
+        self.dg.drawRootGraph()
     def logfile(self):
         sleep(3)
         f = open(self.LOGFILE_NAME, "r")
@@ -80,13 +81,13 @@ class LogData:
             if len(line)==0: 
                 sleep(1)
                 continue
-            self.processLine(line)
+            self.processLine(line.encode())
     # Serial Communication
     def serial(self):
         sleep(3)
         PORT = "/dev/ttyUSB0"
         BAUD_RATE = 57600
-        f = open(self.LOGFILE_NAME, "w")
+        f = open(self.LOGFILE_NAME, "a")
         try:
             fd = serial.Serial(PORT, BAUD_RATE)
         except serial.serialutil.SerialException:
@@ -96,26 +97,30 @@ class LogData:
         self.appendLog("PORT OPEN SUCCESS")
         while True:
             if not fd.readable(): continue
-            line = fd.readline().decode()
-            self.appendLog(line)
+            line = fd.readline()
+            self.appendLog(line.decode())
             f.write(line); f.flush()
-            if line.find("ZZIOT_READY")!=-1: 
-                fd.write(b"START\x7F")
+            if line.find("ZZIOT READY")!=-1: break
+        
+        while True:
+            if input("ZZIOT is ready: start now? (Y/N): ")=="Y":
+                fd.write("START")
                 break
         self.appendLog("Server sent START command")
 
         while True:
             if not fd.readable(): sleep(0.5)
-            line = fd.readline().decode()
+            line = fd.readline()
             f.write(line); f.flush()
             self.processLine(line)
         
-    def processLine(self, line):
+    def processLine(self, line:bytes):
+        line = line.decode()
         self.appendLog(line)
         if line.find("add new NBR")!=-1:
             self.node_cnt += 1
             self.tk.statusText.set_text(f"{self.node_cnt} nodes standby")
-            self.tk.canvas.draw_idle()
+            self.tk.canvas.draw()
         elif line.find("all PROBE_PRR packets sent")!=-1:
             self.incoming = [[0 for _ in range(self.node_cnt+1)] for _ in range(self.node_cnt+1)]
             self.outgoing = [[0 for _ in range(self.node_cnt+1)] for _ in range(self.node_cnt+1)]
@@ -123,16 +128,16 @@ class LogData:
             self.node_type = [0 for _ in range(self.node_cnt+1)]
             self.child_cnt = [0 for _ in range(self.node_cnt+1)]
             self.tk.statusText.set_text(f"{self.node_cnt} nodes ready")
-            self.tk.canvas.draw_idle()
+            self.tk.canvas.draw()
         elif line.startswith("[N]") or line.startswith("[+]"):
             self.nodeInfo(line)
         elif line.find("===END-OF-NI===")!=-1:
             self.graphInfo()
             self.tk.resetLayoutButton["state"] = "active"
-        elif line.startswith("[V]"):
+        elif line.startswith("[D]"):
             line = line.split(":")
-            index = int(line[1])
-            now = int(line[2].split("V")[0])
+            index = int(line[2])
+            now = int(line[3])
             self.maxSequence = max(self.maxSequence, now)
             if index not in self.prr.keys():
                 self.prr[index] = [1, now]
