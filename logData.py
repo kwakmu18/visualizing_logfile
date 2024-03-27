@@ -129,6 +129,9 @@ class LogData:
         elif line.find("===END-OF-NI===")!=-1:
             self.graphInfo()
             self.tk.resetLayoutButton["state"] = "active"
+            self.tk.modeRadio1["state"] = "active"
+            self.tk.modeRadio2["state"] = "active"
+            self.tk.modeRadio3["state"] = "active"
         elif line.startswith("[V]"):
             line = line.split(":")
             index = int(line[1])

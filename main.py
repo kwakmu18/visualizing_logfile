@@ -53,6 +53,10 @@ class TkinterUI:
         self.modeRadio3 = tk.Radiobutton(self.frame1, text="entire map", font=self.font, variable=self.mode, value=2, command=self.radioButtonPressed)
         self.modeRadio3.place(x=250, y=275)
 
+        self.modeRadio1["state"] = "disabled"
+        self.modeRadio2["state"] = "disabled"
+        self.modeRadio3["state"] = "disabled"
+
         self.nodeInfoLabel = tk.Label(self.frame1, text="Entire Map", font=self.font)
         self.nodeInfoLabel.place(x=170, y=10)
 
