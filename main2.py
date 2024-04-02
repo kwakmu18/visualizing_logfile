@@ -1,8 +1,10 @@
 import drawGraph, logData, makeGraph
 import threading, os, serial, networkx as nx
 import tkinter as tk
-import tkinter.ttk as ttk
+#import tkinter.ttk as ttk
 import tkinter.messagebox as msgbox
+#from ttkthemes import ThemedTk
+import ttkbootstrap as ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib import gridspec
@@ -13,62 +15,70 @@ import faulthandler; faulthandler.enable()
 FILENAME = "log-20231205.txt"
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 57600
-DATA_CNT = 2000
 DEBUG_MODE = True
+DATA_CNT = 487
         # ------------------------------------------------- Constants ----------------------------------------------- #
 
 class TkinterUI:
     def __init__(self):
         # ------------------------------------------------ Configure UI ------------------------------------------------ #
-        self.window = tk.Tk()
+        # self.window = tk.Tk()
+        self.window = ttk.Window(themename="minty")
+        #self.style = ttk.Style("minty")
         self.font = ("Pretendard", 12)
         self.mode = tk.IntVar(value=2)
+
+        self.ld = logData.LogData(FILENAME, DATA_CNT, self)
+        self.dg = drawGraph.DrawGraph(self, self.ld)
 
         self.window.geometry("1920x1080")
         self.window.protocol("WM_DELETE_WINDOW", self.terminate)
         self.window.title("NetworkX Graph")
-        self.frame1 = tk.Frame(self.window) # button & node info
-        self.frame1.place(x=10, y=10, width=380, height=350)
+        self.buttonFrame = ttk.LabelFrame(self.window, text="Buttons", labelanchor="n") # button
+        self.buttonFrame.place(x=10, y=800, width=380, height=190)
 
-        self.frame2 = tk.Frame(self.window) # graph
-        self.frame2.place(x=400, y=10, width=1500, height=990)
+        self.graphFrame = ttk.LabelFrame(self.window, text="Graph", labelanchor="n") # graph
+        self.graphFrame.place(x=10, y=10, width=1890, height=780)
 
-        self.frame3 = tk.Frame(self.window) # log
-        self.frame3.place(x=10, y=350, width=380, height=700)
+        self.logFrame = ttk.LabelFrame(self.window, text="Log Information", labelanchor="n") # log
+        self.logFrame.place(x=800, y=800, width=1100, height=190)
 
-        self.lbox = tk.Listbox(self.frame3, bd=1)
-        self.lbox.place(x=10, y=0, width=350, height=660)
-        self.vscroll = tk.Scrollbar(self.frame3, orient="vertical")
-        self.hscroll = tk.Scrollbar(self.frame3, orient="horizontal")
+        self.infoFrame = ttk.LabelFrame(self.window, text="Information", labelanchor="n") # Node Information
+        self.infoFrame.place(x=400, y=800, width=390, height=190)
+
+        self.lbox = tk.Listbox(self.logFrame, bd=1)
+        self.lbox.place(x=10, y=0, width=1060, height=150)
+        self.vscroll = ttk.Scrollbar(self.logFrame, orient="vertical")
+        self.hscroll = ttk.Scrollbar(self.logFrame, orient="horizontal")
         self.vscroll.config(command=self.lbox.yview)
         self.hscroll.config(command=self.lbox.xview)
-        self.vscroll.place(x=380, y=0, width=20, height=660)
-        self.hscroll.place(x=10,y=680, width=370, height=20)
+        self.vscroll.place(x=1070, y=0, width=20, height=150)
+        self.hscroll.place(x=10,y=150, width=1070, height=20)
         self.lbox.config(xscrollcommand=self.hscroll.set, yscrollcommand=self.vscroll.set)
 
-        self.modeRadio1 = tk.Radiobutton(self.frame1, text="root node", variable=self.mode, value=0, command=self.radioButtonPressed)
-        self.modeRadio1.place(x=50, y=275)
-        self.modeRadio2 = tk.Radiobutton(self.frame1, text="neighbor", variable=self.mode, value=1, command=self.radioButtonPressed)
-        self.modeRadio2.place(x=150, y=275)
-        self.modeRadio3 = tk.Radiobutton(self.frame1, text="entire map", variable=self.mode, value=2, command=self.radioButtonPressed)
-        self.modeRadio3.place(x=250, y=275)
+        self.modeRadio1 = ttk.Radiobutton(self.buttonFrame, text="root node", variable=self.mode, value=0, command=self.radioButtonPressed)
+        self.modeRadio1.place(x=50, y=20)
+        self.modeRadio2 = ttk.Radiobutton(self.buttonFrame, text="neighbor", variable=self.mode, value=1, command=self.radioButtonPressed)
+        self.modeRadio2.place(x=150, y=20)
+        self.modeRadio3 = ttk.Radiobutton(self.buttonFrame, text="entire map", variable=self.mode, value=2, command=self.radioButtonPressed)
+        self.modeRadio3.place(x=250, y=20)
 
         self.modeRadio1["state"] = "disabled"
         self.modeRadio2["state"] = "disabled"
         self.modeRadio3["state"] = "disabled"
 
-        self.nodeInfoLabel = tk.Label(self.frame1, text="Entire Map", font=self.font)
-        self.nodeInfoLabel.place(x=170, y=10)
+        self.nodeInfoLabel = ttk.Label(self.infoFrame, text="Entire Map", font=self.font, justify="center")
+        self.nodeInfoLabel.place(x=145, y=10)
 
-        self.startButton = tk.Button(self.frame1, text="START", command=self.startButtonPressed)
-        self.menuButton = tk.Menubutton(self.frame1, text="Menu", relief="raised")
-        self.resetLayoutButton = tk.Button(self.frame1, text="Reset Layout",  command=self.resetLayoutButtonPressed)
-        self.activateButton = tk.Button(self.frame1, text="Deactivate Node",  command = self.activateButtonPressed)
+        self.startButton = ttk.Button(self.buttonFrame, text="START", command=self.startButtonPressed)
+        self.menuButton = ttk.Menubutton(self.buttonFrame, text="Menu")
+        self.resetLayoutButton = ttk.Button(self.buttonFrame, text="Reset Layout",  command=self.resetLayoutButtonPressed)
+        self.activateButton = ttk.Button(self.buttonFrame, text="Deactivate Node",  command = self.activateButtonPressed)
 
-        self.startButton.place(x=0, y=100, width=200, height=50)
-        self.menuButton.place(x=200, y=100, width=200, height=50)
-        self.resetLayoutButton.place(x=0, y=150, width=200, height=50)
-        self.activateButton.place(x=200, y=150, width=200, height=50)
+        self.startButton.place(x=10, y=50, width=175, height=50)
+        self.menuButton.place(x=185, y=50, width=175, height=50)
+        self.resetLayoutButton.place(x=10, y=100, width=175, height=50)
+        self.activateButton.place(x=185, y=100, width=175, height=50)
 
         self.resetLayoutButton["state"] = "disabled"
         self.activateButton["state"] = "disabled"
@@ -78,8 +88,21 @@ class TkinterUI:
         self.menuButton["menu"] = self.menu
 
         self.isReset = tk.IntVar()
-        self.resetLogCheckBox = tk.Checkbutton(self.frame1, text="reset log file",  variable=self.isReset)
+        self.resetLogCheckBox = ttk.Checkbutton(self.buttonFrame, text="reset log file",  variable=self.isReset)
         self.resetLogCheckBox.place(x=0, y=225)
+
+        self.progressLabel = ttk.Label(self.infoFrame, text="Data Progress")
+        self.progressLabel.place(x=10, y=110, width=100, height=20)
+
+        self.dataProgressBar = ttk.Progressbar(self.infoFrame, variable=self.ld.maxSequence, bootstyle="success-striped")
+        self.dataProgressBar.place(x=10, y=130, width=370, height=20)
+
+        # self.nodeTypeMeter = ttk.Meter(master=self.infoFrame, metersize=100, textfont="-size 1",
+        #                                meterthickness=5, subtextfont="-size 9 -weight bold", subtext="VSENSOR" ,
+        #                                padding=5, amountused=100, metertype="full", interactive=True)
+        # self.nodeTypeMeter.place(x=20, y=0, width=110, height=110)
+        
+        #self.nodeTypeMeter["subtext"] = "VSENSOR\n"
         # ------------------------------------------------ Configure UI ------------------------------------------------ #
 
 
@@ -88,9 +111,6 @@ class TkinterUI:
         spec = gridspec.GridSpec(ncols=2, nrows=1, width_ratios=[1,5])
         self.ax1 = self.fig.add_subplot(spec[0])
         self.ax2 = self.fig.add_subplot(spec[1])
-
-        self.ld = logData.LogData(FILENAME, DATA_CNT, self)
-        self.dg = drawGraph.DrawGraph(self, self.ld)
 
         node_proxy_artists = []
         for i in range(1,len(self.ld.NODE_COLOR)):
@@ -110,7 +130,7 @@ class TkinterUI:
         self.ax2.set_axis_off()
         self.statusText = self.ax2.text(0.5, 0.5, "ZZIOT READY")
 
-        self.canvas = FigureCanvasTkAgg(self.fig, master=self.frame2)
+        self.canvas = FigureCanvasTkAgg(self.fig, master=self.graphFrame)
         self.canvas.draw_idle()
 
         #Canvas 위젯 생성 및 그래프 출력
@@ -128,8 +148,8 @@ class TkinterUI:
             makeGraph.makeNeighborGraph(self.ld, self.dg.selectedNode)
             self.dg.drawNeighborGraph()
         else:
-            self.dg.drawRootGraph()
             self.nodeInfoLabel["text"] = "Entire Map"
+            self.dg.drawRootGraph()
         return
 
     def terminate(self):
@@ -161,18 +181,18 @@ class TkinterUI:
         top.title("Binary Upload")
         self.contiki_path, self.node_cnt, self.actuator_id, self.node_id, self.node_type, self.data_cnt = \
             (tk.StringVar() for _ in range(6))
-        contiki_path_label = tk.Label(top, text="Contiki-NG Path : ", font=self.font)
-        self.contiki_path_input = tk.Entry(top, textvariable = self.contiki_path)
-        node_cnt_label = tk.Label(top, text="Node Cnt : ", font=self.font)
-        self.node_cnt_input = tk.Entry(top, textvariable=self.node_cnt)
-        actuator_id_label = tk.Label(top, text="Actuator ID : ", font=self.font)
-        self.actuator_id_input = tk.Entry(top, textvariable=self.actuator_id)
-        node_id_label = tk.Label(top, text="Node ID : ", font=self.font)
-        node_id_input = tk.Entry(top, textvariable=self.node_id)
-        node_type_label = tk.Label(top, text="Node Type : ", font=self.font)
-        node_type_input = tk.Combobox(top, values=self.ld.NODE_TYPE[1:-1], textvariable=self.node_type)
-        data_cnt_label = tk.Label(top, text="Data Cnt : ", font=self.font)
-        self.data_cnt_input = tk.Entry(top, textvariable=self.data_cnt)
+        contiki_path_label = ttk.Label(top, text="Contiki-NG Path : ")
+        self.contiki_path_input = ttk.Entry(top, textvariable = self.contiki_path)
+        node_cnt_label = ttk.Label(top, text="Node Cnt : ")
+        self.node_cnt_input = ttk.Entry(top, textvariable=self.node_cnt)
+        actuator_id_label = ttk.Label(top, text="Actuator ID : ")
+        self.actuator_id_input = ttk.Entry(top, textvariable=self.actuator_id)
+        node_id_label = ttk.Label(top, text="Node ID : ")
+        node_id_input = ttk.Entry(top, textvariable=self.node_id)
+        node_type_label = ttk.Label(top, text="Node Type : ")
+        node_type_input = ttk.Combobox(top, values=self.ld.NODE_TYPE[1:-1], textvariable=self.node_type)
+        data_cnt_label = ttk.Label(top, text="Data Cnt : ")
+        self.data_cnt_input = ttk.Entry(top, textvariable=self.data_cnt)
 
         self.contiki_path_input.insert(0, "/home/mckkk119/CNLAB_EV/contiki-ng")
         self.node_cnt_input.insert(0, "4")
@@ -194,7 +214,7 @@ class TkinterUI:
         data_cnt_label.place(x=10, y=185)
         self.data_cnt_input.place(x=120, y=185, width=260, height=25)
 
-        uploadButton = tk.Button(top, text="Upload to node", command=self.upload, font=self.font)
+        uploadButton = tk.Button(top, text="Upload to node", command=self.upload)
         uploadButton.place(x=10, y=220, width=380, height=70)
 
         self.uploadLog = tk.Listbox(top)
@@ -293,7 +313,7 @@ class TkinterUI:
         self.contiki_path_input["state"] = "disabled"
         self.data_cnt_input["state"] = "disabled"
         self.actuator_id_input["state"] = "disabled"
-
+        self.ld.data_cnt = int(self.data_cnt_input.get())
     def appendLog(self, line):
         self.uploadLog.insert(tk.END, line)
         self.uploadLog.update()
@@ -301,7 +321,8 @@ class TkinterUI:
 
     def resetLayoutButtonPressed(self):
         self.ld.neighborPos = nx.spring_layout(self.ld.entireG)
-        self.dg.drawNeighborGraph()
+        if self.mode.get()==1: self.dg.drawNeighborGraph()
+        else: self.dg.drawRootGraph()
 
     def activateButtonPressed(self):
         if self.ld.activate[self.dg.selectedNode]:

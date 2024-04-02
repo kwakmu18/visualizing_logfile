@@ -2,12 +2,12 @@ import networkx as nx
 import makeGraph
 import netgraph
 class DrawGraph:
-    def __init__(self, tk, ld):
+    def __init__(self, main, ld):
         self.ld = ld
         self.ld.dg = self
-        self.selectedNode = 1
+        self.selectedNode = 2
         self.font = ("Pretendard", 12)
-        self.tk = tk
+        self.main = main
 
     def clickEvent(self, event):
         for node in self.ld.neighborPos.keys():
@@ -19,82 +19,85 @@ class DrawGraph:
                 return
 
     def releaseEvent(self, event):
-        if self.selectedNode==None or self.tk.mode.get()==2: return
+        if self.selectedNode==None or self.main.mode.get()==2: return
         if (self.originalX - event.xdata)**2 + (self.originalY - event.ydata)**2 > 0.0005:return
         makeGraph.makeNeighborGraph(self.ld, self.selectedNode)
-        if self.tk.mode.get()==0:
+        if self.main.mode.get()==0:
             makeGraph.makeRootGraph(self.ld, self.selectedNode)
             self.drawRootGraph()
         else:
             self.drawNeighborGraph()
         
-        if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="VSENSOR":
-            self.tk.activateButton["state"] = "active"
+        if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="VSENSOR" or \
+            self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="SENSOR":
+            self.main.activateButton["state"] = "active"
             if self.ld.activate[self.selectedNode]:
-                self.tk.activateButton["text"] = "Deactivate Node"
+                self.main.activateButton["text"] = "Deactivate Node"
             else:
-                self.tk.activateButton["text"] = "Activate Node"
+                self.main.activateButton["text"] = "Activate Node"
         else:
-            self.tk.activateButton["state"] = "disabled"
+            self.main.activateButton["state"] = "disabled"
 
         self.changeLabel()
         self.originalX = None
         self.originalY = None
 
     def changeLabel(self):
-        if self.selectedNode == None: return
+        if self.selectedNode == None or self.main.mode.get()==2: return
         try:
-            self.tk.nodeInfoLabel["text"] = f"{self.selectedNode}번 노드\n"
-            self.tk.nodeInfoLabel["text"] += f"{self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]}\n"
-            if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="VSENSOR" and self.selectedNode in self.ld.prr.keys():
-                self.tk.nodeInfoLabel["text"] += f"{int(self.ld.prr[self.selectedNode][0]*10000/self.ld.prr[self.selectedNode][1])-1}"
-                self.tk.nodeInfoLabel["text"] += f"({self.ld.prr[self.selectedNode][0]}/{self.ld.prr[self.selectedNode][1]})"
+            self.main.nodeInfoLabel["text"] = f"{self.selectedNode}번 노드\n"
+            self.main.nodeInfoLabel["text"] += f"{self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]}\n"
+            if (self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="VSENSOR" or \
+                self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="SENSOR") and \
+                  self.selectedNode in self.ld.prr.keys():
+                self.main.nodeInfoLabel["text"] += f"{int(self.ld.prr[self.selectedNode][0]*10000/self.ld.prr[self.selectedNode][1])-1}"
+                self.main.nodeInfoLabel["text"] += f"({self.ld.prr[self.selectedNode][0]}/{self.ld.prr[self.selectedNode][1]})"
         except KeyError:
             self.changeLabel()
 
     def drawNeighborGraph(self):
-        self.tk.ax2.clear()
-        self.tk.fig.canvas.mpl_connect('button_press_event', self.clickEvent)
-        self.tk.fig.canvas.mpl_connect('button_release_event', self.releaseEvent)
-        self.node_color = nx.get_node_attributes(self.ld.neighborG, 'color').values()
-        self.weight = nx.get_edge_attributes(self.ld.neighborG, 'weight')
-        self.nodecolor = {node:"tab:"+nodecolor for node,nodecolor in zip(self.ld.neighborG.nodes, self.node_color)}
+        self.main.ax2.clear()
+        self.main.fig.canvas.mpl_connect('button_press_event', self.clickEvent)
+        self.main.fig.canvas.mpl_connect('button_release_event', self.releaseEvent)
         self.I = netgraph.InteractiveGraph(self.ld.neighborG,
-                                edge_layout='curved',
-                                edge_layout_kwargs=dict(k=0.025),
                                 node_layout=self.ld.neighborPos,
                                 node_labels=dict(zip(self.ld.neighborG.nodes,self.ld.neighborG.nodes)),
                                 node_label_bbox=dict(fc="lightgreen", ec="black", boxstyle="square", lw=3),
-                                node_size=3   ,
-                                node_color=self.nodecolor,
-                                edge_labels=self.weight,
+                                node_size=6   ,
+                                node_color={node:"tab:"+(self.ld.NODE_COLOR[self.ld.node_type[node]] if self.ld.activate[node] else "grey") for node in self.ld.neighborG.nodes},
+                                edge_labels=nx.get_edge_attributes(self.ld.neighborG, 'weight'),
+                                edge_label_position=0.8,
+                                edge_label_fontdict = {"fontsize":9.5,"fontfamily":"Pretendard","bbox":{"alpha":0}},
+                                edge_color=nx.get_edge_attributes(self.ld.neighborG, 'color'),
                                 scale=(3,3),
                                 annotations = {x:self.ld.annotation[x] for x in self.ld.neighborG.edges},
                                 edge_width = 1,
                                 arrows = True,
-                                ax=self.tk.ax2,
+                                ax=self.main.ax2,
         )
-        self.tk.canvas.draw_idle()
+        self.main.canvas.draw_idle()
         return
 
     def drawRootGraph(self):
-        G = self.ld.rootG if self.tk.mode.get()==0 else self.ld.entireG
-        self.tk.ax2.clear()
-        self.node_color = nx.get_node_attributes(G, 'color').values()
-        self.weight = nx.get_edge_attributes(G, 'weight')
-        self.nodecolor = {node:"tab:"+nodecolor for node,nodecolor in zip(G.nodes, self.node_color)}
+        G = self.ld.rootG if self.main.mode.get()==0 else self.ld.entireG
+        self.main.fig.canvas.mpl_connect('button_press_event', self.clickEvent)
+        self.main.fig.canvas.mpl_connect('button_release_event', self.releaseEvent)
+        self.main.ax2.clear()
         self.I = netgraph.InteractiveGraph(G,
                                 node_layout=self.ld.neighborPos,
                                 node_labels=dict(zip(G.nodes,G.nodes)),
                                 node_label_bbox=dict(fc="lightgreen", ec="black", boxstyle="square", lw=3),
-                                node_size=3   ,
-                                node_color=self.nodecolor,
-                                edge_labels=self.weight,
-                                scale=(100,100),
+                                node_size=6   ,
+                                node_color={node:"tab:"+(self.ld.NODE_COLOR[self.ld.node_type[node]] if self.ld.activate[node] else "grey") for node in G.nodes},
+                                edge_labels=nx.get_edge_attributes(G, 'weight'),
+                                edge_label_position=0.8,
+                                edge_label_fontdict = {"fontsize":9.5,"fontfamily":"Pretendard","bbox":{"alpha":0}},
+                                edge_color=nx.get_edge_attributes(G, 'color'),
+                                scale=(3,3),
                                 annotations = {x:self.ld.annotation[x] for x in G.edges},
                                 edge_width = 1,
                                 arrows=True,
-                                ax=self.tk.ax2
+                                ax=self.main.ax2
         )
-        self.tk.canvas.draw_idle()
+        self.main.canvas.draw_idle()
         return

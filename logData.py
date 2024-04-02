@@ -12,24 +12,23 @@ def extract(text):
 
 class LogData:
     # Class initialize
-    def __init__(self, filename, tk):
+    def __init__(self, filename, data_cnt, main):
         self.node_cnt = 1
-        self.G = nx.Graph()
         self.rootG = nx.DiGraph()
-        self.neighborG = nx.Graph()
+        self.entireG = nx.DiGraph()
+        self.neighborG = nx.DiGraph()
         self.ranks = {}
         self.annotation = {}
         self.prr = {}
         self.event = threading.Event()
         self.ROOT_NODE = 1
         self.LOGFILE_NAME = filename
-        self.NODE_TYPE = [None, "AP", "SENSOR", "ACTUATOR", "ROUTER", "VSENSOR"]
-        self.NODE_COLOR = [None, "red", "blue", "green", "cyan", "orange"]
+        self.NODE_TYPE = [None, "AP", "SENSOR", "ACTUATOR", "ROUTER", "VSENSOR", "DEACTIVATED"]
+        self.NODE_COLOR = [None, "red", "blue", "green", "cyan", "orange", "grey"]
         self.NODE_EDGECOLOR = ["white", "white", "black", "white", "white", "black"]
-        self.maxSequence = 1
-        self.tk = tk
-    def setDG(self, dg):
-        self.dg = dg
+        self.maxSequence = tk.IntVar(value=0)
+        self.main = main
+        self.data_cnt = data_cnt
 
     def nodeInfo(self, line:str):
         sections = extract(line)
@@ -43,34 +42,21 @@ class LogData:
             self.outgoing[root_id][child_id]=child_outgoing
 
     def graphInfo(self):
-        self.activate = [True for _ in range(self.node_cnt+1)]
         for i in range(1, self.node_cnt+1):
-            self.G.add_node(str(i), name=i, color=self.NODE_COLOR[self.node_type[i]], edge_color=self.NODE_EDGECOLOR[self.node_type[i]])
+            self.entireG.add_node(i)#, name=i, color=self.NODE_COLOR[self.node_type[i]], edge_color=self.NODE_EDGECOLOR[self.node_type[i]])
+            self.rootG.add_node(i)#, name=i,color=self.NODE_COLOR[self.node_type[i]], edge_color=self.NODE_EDGECOLOR[self.node_type[i]])
             for j in range(i+1, self.node_cnt+1):
                 if i==j or self.outgoing[i][j]==0: continue
-                self.G.add_edge(str(i), str(j))#, weight=incoming[i][j] if incoming[i][j]!=0 else outgoing[i][j])
-                self.G.add_edge(str(j), str(i))
+                self.entireG.add_edge(i, j, color="red")#, weight=incoming[i][j] if incoming[i][j]!=0 else outgoing[i][j])
+                self.entireG.add_edge(j, i, color="blue")
 
-        self.pos = nx.spring_layout(self.G)
+        self.pos = nx.spring_layout(self.entireG)
         self.neighborPos = self.pos
 
-        self.entireG = self.G.copy()
-
-        self.G.clear()
-        self.G.clear_edges()
-
-        for i in range(2, len(self.parent)):
-            self.G.add_edge(str(i), str(self.parent[i]))
-
-
-        for i in range(1, self.node_cnt+1):
-            self.G.add_node(str(i), name=i,color=self.NODE_COLOR[self.node_type[i]], edge_color=self.NODE_EDGECOLOR[self.node_type[i]])
-            self.rootG.add_node(str(i), name=i,color=self.NODE_COLOR[self.node_type[i]], edge_color=self.NODE_EDGECOLOR[self.node_type[i]])
-
-        self.annotation = {str(i):self.NODE_TYPE[self.node_type[i]] for i in range(1,self.node_cnt+1)}
+        self.annotation = {i:self.NODE_TYPE[self.node_type[i]] for i in range(1,self.node_cnt+1)}
         for i in range(1, self.node_cnt+1):
             for j in range(1, self.node_cnt+1):
-                self.annotation[(str(i), str(j))] = dict(s="%d/%d"%(self.incoming[i][j], self.outgoing[i][j]), color="red")
+                self.annotation[(i, j)] = dict(s="%d/%d"%(self.incoming[i][j], self.outgoing[i][j]), color="red")
     def logfile(self):
         sleep(3)
         f = open(self.LOGFILE_NAME, "r")
@@ -114,36 +100,50 @@ class LogData:
         self.appendLog(line)
         if line.find("add new NBR")!=-1:
             self.node_cnt += 1
-            self.tk.statusText.set_text(f"{self.node_cnt} nodes standby")
-            self.tk.canvas.draw_idle()
+            self.main.statusText.set_text(f"{self.node_cnt} nodes standby")
+            self.main.canvas.draw_idle()
         elif line.find("all PROBE_PRR packets sent")!=-1:
             self.incoming = [[0 for _ in range(self.node_cnt+1)] for _ in range(self.node_cnt+1)]
             self.outgoing = [[0 for _ in range(self.node_cnt+1)] for _ in range(self.node_cnt+1)]
             self.parent = [0 for _ in range(self.node_cnt+1)]
             self.node_type = [0 for _ in range(self.node_cnt+1)]
             self.child_cnt = [0 for _ in range(self.node_cnt+1)]
-            self.tk.statusText.set_text(f"{self.node_cnt} nodes ready")
-            self.tk.canvas.draw_idle()
+            self.activate = [True for _ in range(self.node_cnt+1)]
+            self.main.statusText.set_text(f"{self.node_cnt} nodes ready")
+            self.main.canvas.draw_idle()
         elif line.startswith("[N]") or line.startswith("[+]"):
             self.nodeInfo(line)
         elif line.find("===END-OF-NI===")!=-1:
             self.graphInfo()
-            self.tk.resetLayoutButton["state"] = "active"
-            self.tk.modeRadio1["state"] = "active"
-            self.tk.modeRadio2["state"] = "active"
-            self.tk.modeRadio3["state"] = "active"
+            self.main.resetLayoutButton["state"] = "active"
+            self.main.modeRadio1["state"] = "active"
+            self.main.modeRadio2["state"] = "active"
+            self.main.modeRadio3["state"] = "active"
+            self.main.statusText.set_text("Graph is ready to draw\nPress a radio button on the left side.")
+            self.main.canvas.draw_idle()
         elif line.startswith("[V]"):
             line = line.split(":")
             index = int(line[1])
             now = int(line[2].split("V")[0])
-            self.maxSequence = max(self.maxSequence, now)
             if index not in self.prr.keys():
                 self.prr[index] = [1, now]
                 return
+            self.maxSequence.set(max(int(now/self.data_cnt*100), self.maxSequence.get()))
+            self.prr[index][0]+=1
+            self.prr[index][1]=now
+            self.dg.changeLabel()
+        elif line.startswith("[D]"):
+            line = line.split(":")
+            index = int(line[2])
+            now = int(line[3])
+            if index not in self.prr.keys():
+                self.prr[index] = [1, now]
+                return
+            self.maxSequence.set(max(now, self.maxSequence.get()))
             self.prr[index][0]+=1
             self.prr[index][1]=now
             self.dg.changeLabel()
     def appendLog(self, line):
-        self.tk.lbox.insert(tk.END, line)
-        self.tk.lbox.update()
-        self.tk.lbox.see(tk.END)
+        self.main.lbox.insert(tk.END, line)
+        self.main.lbox.update()
+        self.main.lbox.see(tk.END)
