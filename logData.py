@@ -19,7 +19,7 @@ class LogData:
         self.neighborG = nx.DiGraph()
         self.ranks = {}
         self.annotation = {}
-        self.prr = {}
+        self.prr = {2:[0,1]}
         self.event = threading.Event()
         self.ROOT_NODE = 1
         self.LOGFILE_NAME = filename
@@ -62,7 +62,7 @@ class LogData:
         f = open(self.LOGFILE_NAME, "r")
         while True:
             if self.event.is_set():return
-            line = f.readline()
+            line = f.readline()[:-1]
             if len(line)==0: 
                 sleep(1)
                 continue
@@ -74,25 +74,24 @@ class LogData:
         BAUD_RATE = 57600
         f = open(self.LOGFILE_NAME, "w")
         try:
-            fd = serial.Serial(PORT, BAUD_RATE)
+            self.fd = serial.Serial(PORT, BAUD_RATE)
         except serial.serialutil.SerialException:
             self.appendLog("Unable to open serial device")
             self.event.set()
             return
         self.appendLog("PORT OPEN SUCCESS")
         while True:
-            if not fd.readable(): continue
-            line = fd.readline().decode()
+            if not self.fd.readable(): continue
+            line = self.fd.readline().decode()[:-1]
             self.appendLog(line)
             f.write(line); f.flush()
             if line.find("ZZIOT_READY")!=-1: 
-                fd.write(b"START\x7F")
+                self.fd.write(b"START\x7F")
                 break
-        self.appendLog("Server sent START command")
 
         while True:
-            if not fd.readable(): sleep(0.5)
-            line = fd.readline().decode()
+            if not self.fd.readable(): sleep(0.5)
+            line = self.fd.readline().decode()[:-1]
             f.write(line); f.flush()
             self.processLine(line)
         
@@ -109,6 +108,7 @@ class LogData:
             self.node_type = [0 for _ in range(self.node_cnt+1)]
             self.child_cnt = [0 for _ in range(self.node_cnt+1)]
             self.activate = [True for _ in range(self.node_cnt+1)]
+            self.prr = {id:[0,1] for id in range(self.node_cnt+1)}
             self.main.statusText.set_text(f"{self.node_cnt} nodes ready")
             self.main.canvas.draw_idle()
         elif line.startswith("[N]") or line.startswith("[+]"):
@@ -119,6 +119,7 @@ class LogData:
             self.main.modeRadio1["state"] = "active"
             self.main.modeRadio2["state"] = "active"
             self.main.modeRadio3["state"] = "active"
+            self.main.menuButton["state"] = "disabled"
             self.main.statusText.set_text("Graph is ready to draw\nPress a radio button on the left side.")
             self.main.canvas.draw_idle()
         elif line.startswith("[V]"):
@@ -128,10 +129,10 @@ class LogData:
             if index not in self.prr.keys():
                 self.prr[index] = [1, now]
                 return
-            self.maxSequence.set(max(int(now/self.data_cnt*100), self.maxSequence.get()))
             self.prr[index][0]+=1
             self.prr[index][1]=now
-            self.dg.changeLabel()
+            self.changeLabel(index)
+            
         elif line.startswith("[D]"):
             line = line.split(":")
             index = int(line[2])
@@ -139,11 +140,29 @@ class LogData:
             if index not in self.prr.keys():
                 self.prr[index] = [1, now]
                 return
-            self.maxSequence.set(max(now, self.maxSequence.get()))
             self.prr[index][0]+=1
             self.prr[index][1]=now
-            self.dg.changeLabel()
+            self.changeLabel(index)
+
+        elif line.startswith("[S]"):
+            line = line.split(":")
+            index = int(line[1])
+            now = int(line[2].split("D")[0])
+            if index not in self.prr.keys():
+                self.prr[index] = [1, now]
+                return
+            if self.activate[index]: self.prr[index][0]+=1
+            self.prr[index][1]=now
+            self.changeLabel(index)
+
     def appendLog(self, line):
         self.main.lbox.insert(tk.END, line)
         self.main.lbox.update()
         self.main.lbox.see(tk.END)
+
+    def changeLabel(self, index):
+        if self.NODE_TYPE[self.node_type[self.dg.selectedNode]]=="VSENSOR" or \
+            self.NODE_TYPE[self.node_type[self.dg.selectedNode]]=="SENSOR":
+            self.maxSequence.set(int(self.prr[index][0]/self.prr[index][1]*100))
+            self.main.prrProgressBar.configure(mask="{}%"+f"({self.prr[self.dg.selectedNode][0]}/{self.prr[self.dg.selectedNode][1]})")
+        

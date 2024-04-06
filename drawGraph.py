@@ -6,7 +6,6 @@ class DrawGraph:
         self.ld = ld
         self.ld.dg = self
         self.selectedNode = 2
-        self.font = ("Pretendard", 12)
         self.main = main
 
     def clickEvent(self, event):
@@ -31,29 +30,20 @@ class DrawGraph:
         if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="VSENSOR" or \
             self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="SENSOR":
             self.main.activateButton["state"] = "active"
+            self.main.prrProgressBar.configure(mask="{}%"+f"({self.ld.prr[self.selectedNode][0]}/{self.ld.prr[self.selectedNode][1]})")
+            self.ld.maxSequence.set(int(self.ld.prr[self.selectedNode][0]/self.ld.prr[self.selectedNode][1]*100))
             if self.ld.activate[self.selectedNode]:
                 self.main.activateButton["text"] = "Deactivate Node"
             else:
                 self.main.activateButton["text"] = "Activate Node"
         else:
             self.main.activateButton["state"] = "disabled"
+            self.ld.maxSequence.set(0)
+            self.main.prrProgressBar.configure(mask="{}%"+f"(0/0)")
 
-        self.changeLabel()
+        self.main.drawInfo()
         self.originalX = None
         self.originalY = None
-
-    def changeLabel(self):
-        if self.selectedNode == None or self.main.mode.get()==2: return
-        try:
-            self.main.nodeInfoLabel["text"] = f"{self.selectedNode}번 노드\n"
-            self.main.nodeInfoLabel["text"] += f"{self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]}\n"
-            if (self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="VSENSOR" or \
-                self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="SENSOR") and \
-                  self.selectedNode in self.ld.prr.keys():
-                self.main.nodeInfoLabel["text"] += f"{int(self.ld.prr[self.selectedNode][0]*10000/self.ld.prr[self.selectedNode][1])-1}"
-                self.main.nodeInfoLabel["text"] += f"({self.ld.prr[self.selectedNode][0]}/{self.ld.prr[self.selectedNode][1]})"
-        except KeyError:
-            self.changeLabel()
 
     def drawNeighborGraph(self):
         self.main.ax2.clear()
@@ -67,7 +57,7 @@ class DrawGraph:
                                 node_color={node:"tab:"+(self.ld.NODE_COLOR[self.ld.node_type[node]] if self.ld.activate[node] else "grey") for node in self.ld.neighborG.nodes},
                                 edge_labels=nx.get_edge_attributes(self.ld.neighborG, 'weight'),
                                 edge_label_position=0.8,
-                                edge_label_fontdict = {"fontsize":9.5,"fontfamily":"Pretendard","bbox":{"alpha":0}},
+                                edge_label_fontdict = {"fontsize":9.5,"bbox":{"alpha":0}},
                                 edge_color=nx.get_edge_attributes(self.ld.neighborG, 'color'),
                                 scale=(3,3),
                                 annotations = {x:self.ld.annotation[x] for x in self.ld.neighborG.edges},
@@ -91,7 +81,7 @@ class DrawGraph:
                                 node_color={node:"tab:"+(self.ld.NODE_COLOR[self.ld.node_type[node]] if self.ld.activate[node] else "grey") for node in G.nodes},
                                 edge_labels=nx.get_edge_attributes(G, 'weight'),
                                 edge_label_position=0.8,
-                                edge_label_fontdict = {"fontsize":9.5,"fontfamily":"Pretendard","bbox":{"alpha":0}},
+                                edge_label_fontdict = {"fontsize":9.5,"bbox":{"alpha":0}},
                                 edge_color=nx.get_edge_attributes(G, 'color'),
                                 scale=(3,3),
                                 annotations = {x:self.ld.annotation[x] for x in G.edges},

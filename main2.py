@@ -1,9 +1,7 @@
 import drawGraph, logData, makeGraph
-import threading, os, serial, networkx as nx
+import threading, os, serial, networkx as nx, netgraph
 import tkinter as tk
-#import tkinter.ttk as ttk
 import tkinter.messagebox as msgbox
-#from ttkthemes import ThemedTk
 import ttkbootstrap as ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
@@ -12,20 +10,16 @@ import subprocess
 import faulthandler; faulthandler.enable()
 
         # ------------------------------------------------- Constants ----------------------------------------------- #
-FILENAME = "log-20231205.txt"
+FILENAME = "log.txt"
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 57600
-DEBUG_MODE = True
 DATA_CNT = 487
         # ------------------------------------------------- Constants ----------------------------------------------- #
 
 class TkinterUI:
     def __init__(self):
         # ------------------------------------------------ Configure UI ------------------------------------------------ #
-        # self.window = tk.Tk()
         self.window = ttk.Window(themename="minty")
-        #self.style = ttk.Style("minty")
-        self.font = ("Pretendard", 12)
         self.mode = tk.IntVar(value=2)
 
         self.ld = logData.LogData(FILENAME, DATA_CNT, self)
@@ -43,8 +37,14 @@ class TkinterUI:
         self.logFrame = ttk.LabelFrame(self.window, text="Log Information", labelanchor="n") # log
         self.logFrame.place(x=800, y=800, width=1100, height=190)
 
-        self.infoFrame = ttk.LabelFrame(self.window, text="Information", labelanchor="n") # Node Information
+        self.infoFrame = ttk.LabelFrame(self.window, text="Selected Node", labelanchor="n") # Node Information
         self.infoFrame.place(x=400, y=800, width=390, height=190)
+
+        self.nodeIDFrame = ttk.LabelFrame(self.infoFrame, text="Node ID", labelanchor="n")
+        self.nodeIDFrame.place(x=80, y=10, width=100, height=100)
+
+        self.nodeTypeFrame = ttk.LabelFrame(self.infoFrame, text="Node Type", labelanchor="n")
+        self.nodeTypeFrame.place(x=200, y=10, width=100, height=100)
 
         self.lbox = tk.Listbox(self.logFrame, bd=1)
         self.lbox.place(x=10, y=0, width=1060, height=150)
@@ -67,9 +67,6 @@ class TkinterUI:
         self.modeRadio2["state"] = "disabled"
         self.modeRadio3["state"] = "disabled"
 
-        self.nodeInfoLabel = ttk.Label(self.infoFrame, text="Entire Map", font=self.font, justify="center")
-        self.nodeInfoLabel.place(x=145, y=10)
-
         self.startButton = ttk.Button(self.buttonFrame, text="START", command=self.startButtonPressed)
         self.menuButton = ttk.Menubutton(self.buttonFrame, text="Menu")
         self.resetLayoutButton = ttk.Button(self.buttonFrame, text="Reset Layout",  command=self.resetLayoutButtonPressed)
@@ -83,34 +80,36 @@ class TkinterUI:
         self.resetLayoutButton["state"] = "disabled"
         self.activateButton["state"] = "disabled"
 
+        self.isReset = tk.BooleanVar()
+        self.isDebug = tk.BooleanVar()
+        
         self.menu = tk.Menu(self.menuButton, tearoff=0)
         self.menu.add_command(label="Binary Upload", command=self.binaryUpload)
+        self.menu.add_checkbutton(label="Reset Logfile", onvalue=1, offvalue=0, variable=self.isReset)
+        self.menu.add_checkbutton(label="Debugging Mode", onvalue=1, offvalue=0, variable=self.isDebug)
         self.menuButton["menu"] = self.menu
 
-        self.isReset = tk.IntVar()
-        self.resetLogCheckBox = ttk.Checkbutton(self.buttonFrame, text="reset log file",  variable=self.isReset)
-        self.resetLogCheckBox.place(x=0, y=225)
 
-        self.progressLabel = ttk.Label(self.infoFrame, text="Data Progress")
-        self.progressLabel.place(x=10, y=110, width=100, height=20)
+        self.prrLabel = ttk.Label(self.infoFrame, text="Node PRR")
+        self.prrLabel.place(x=10, y=110, width=150, height=20)
 
-        self.dataProgressBar = ttk.Progressbar(self.infoFrame, variable=self.ld.maxSequence, bootstyle="success-striped")
-        self.dataProgressBar.place(x=10, y=130, width=370, height=20)
+        self.prrProgressBar = ttk.Floodgauge(self.infoFrame, variable=self.ld.maxSequence, mask="{}%"+"(0/0)")
+        self.prrProgressBar.place(x=10, y=130, width=370, height=20)
 
-        # self.nodeTypeMeter = ttk.Meter(master=self.infoFrame, metersize=100, textfont="-size 1",
-        #                                meterthickness=5, subtextfont="-size 9 -weight bold", subtext="VSENSOR" ,
-        #                                padding=5, amountused=100, metertype="full", interactive=True)
-        # self.nodeTypeMeter.place(x=20, y=0, width=110, height=110)
-        
-        #self.nodeTypeMeter["subtext"] = "VSENSOR\n"
+        self.nodeTypeLabel = ttk.Label(self.nodeTypeFrame, text="", justify="center", font=(ttk.font.BOLD, 11))
+        self.nodeTypeLabel.place(x=0, y=30, width=90, height=40)
+
         # ------------------------------------------------ Configure UI ------------------------------------------------ #
-
 
         # ----------------------------------------------- Configure Canvas --------------------------------------------- #
         self.fig = plt.figure(figsize=(15,10))
         spec = gridspec.GridSpec(ncols=2, nrows=1, width_ratios=[1,5])
         self.ax1 = self.fig.add_subplot(spec[0])
         self.ax2 = self.fig.add_subplot(spec[1])
+
+        self.nodeIDFig, self.nodeIDAx = plt.subplots(1,1)
+        self.nodeIDAx.set_axis_off()
+        self.nodeG = nx.Graph()
 
         node_proxy_artists = []
         for i in range(1,len(self.ld.NODE_COLOR)):
@@ -128,14 +127,18 @@ class TkinterUI:
         self.ax1.add_artist(node_legend)
         self.ax1.set_axis_off()
         self.ax2.set_axis_off()
-        self.statusText = self.ax2.text(0.5, 0.5, "ZZIOT READY")
+        self.statusText = self.ax2.text(0.5, 0.5, "PRESS START BUTTON TO START")
 
         self.canvas = FigureCanvasTkAgg(self.fig, master=self.graphFrame)
         self.canvas.draw_idle()
 
         #Canvas 위젯 생성 및 그래프 출력
-        self.canvas_widget = self.canvas.get_tk_widget()
-        self.canvas_widget.pack()
+        self.canvas.get_tk_widget().pack()
+        
+        self.nodeIDCanvas = FigureCanvasTkAgg(self.nodeIDFig, master=self.nodeIDFrame)
+        self.nodeIDCanvas.draw_idle()
+        self.nodeIDCanvas.get_tk_widget().pack()
+
         self.window.mainloop()
 
         # ----------------------------------------------- Configure Canvas --------------------------------------------- #
@@ -148,7 +151,6 @@ class TkinterUI:
             makeGraph.makeNeighborGraph(self.ld, self.dg.selectedNode)
             self.dg.drawNeighborGraph()
         else:
-            self.nodeInfoLabel["text"] = "Entire Map"
             self.dg.drawRootGraph()
         return
 
@@ -163,7 +165,7 @@ class TkinterUI:
                 with open(FILENAME, "w") as f: pass
             except FileNotFoundError:
                 with open(FILENAME, "w") as f: pass
-        if not DEBUG_MODE:
+        if not self.isDebug.get():
             try:
                 serial.Serial(PORT, BAUD_RATE)
             except serial.serialutil.SerialException:
@@ -229,11 +231,11 @@ class TkinterUI:
         self.uploadLog.config(xscrollcommand=hscroll.set, yscrollcommand=vscroll.set)
 
     def upload(self):
-        if not DEBUG_MODE:
+        if not self.isDebug.get():
             try:
                 serial.Serial(PORT, BAUD_RATE)
             except serial.serialutil.SerialException:
-                msgbox.showwarning("ERROR", "Device is not ready.")
+                msgbox.showwarning("ERROR", "Device is not ready.\n or please execute with root permission.")
                 return
         if self.contiki_path.get()=="" or self.node_cnt.get()=="" or self.actuator_id.get()=="" \
             or self.node_id.get()=="" or self.node_type.get()=="" or self.data_cnt.get()=="":
@@ -313,7 +315,6 @@ class TkinterUI:
         self.contiki_path_input["state"] = "disabled"
         self.data_cnt_input["state"] = "disabled"
         self.actuator_id_input["state"] = "disabled"
-        self.ld.data_cnt = int(self.data_cnt_input.get())
     def appendLog(self, line):
         self.uploadLog.insert(tk.END, line)
         self.uploadLog.update()
@@ -325,13 +326,38 @@ class TkinterUI:
         else: self.dg.drawRootGraph()
 
     def activateButtonPressed(self):
+        if self.isDebug.get(): 
+            msgbox.showwarning("ERROR", "Can't use on DEBUG MODE.")
+            return
         if self.ld.activate[self.dg.selectedNode]:
             self.activateButton["text"] = "Activate Node"
             self.ld.activate[self.dg.selectedNode] = False
+            self.ld.fd.write(f"VS-OFF {self.dg.selectedNode}".encode()+b"\x7F")
         else:
             self.activateButton["text"] = "Deactivate Node"
             self.ld.activate[self.dg.selectedNode] = True
+            self.ld.fd.write(f"VS-ON {self.dg.selectedNode}".encode()+b"\x7F")
         if self.mode.get()==1: self.dg.drawNeighborGraph()
         else: self.dg.drawRootGraph()
 
+        
+
+    def drawInfo(self):
+        self.nodeIDAx.clear()
+        self.nodeG.clear()
+        self.nodeG.add_node(self.dg.selectedNode)
+
+        I1 = netgraph.InteractiveGraph(self.nodeG,
+                                node_labels=dict(zip(self.nodeG.nodes,[self.dg.selectedNode])),
+                                node_label_bbox=dict(fc="lightgreen", ec="black", boxstyle="square", lw=3),
+                                node_size=6,
+                                node_color={node:"tab:"+(self.ld.NODE_COLOR[self.ld.node_type[node]]) for node in self.nodeG.nodes},
+                                ax=self.nodeIDAx,
+        )
+
+        self.nodeTypeLabel["text"] = self.ld.NODE_TYPE[self.ld.node_type[self.dg.selectedNode]]+"\n  ‭ ‭ ‭ ‭ ‭ ‭ ‭ ‭ ‭ ‭ ‭ ‭ ‭ "
+
+        #self.ld.NODE_TYPE[self.ld.node_type[self.dg.selectedNode]
+        #Canvas 위젯 생성 및 그래프 출력
+        self.nodeIDCanvas.draw_idle()
 TkinterUI()
