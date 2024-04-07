@@ -18,7 +18,7 @@ class DrawGraph:
                 return
 
     def releaseEvent(self, event):
-        if self.selectedNode==None or self.main.mode.get()==2: return
+        if self.selectedNode==None or self.main.mode.get()==2 or self.main.mode.get()==3: return
         if (self.originalX - event.xdata)**2 + (self.originalY - event.ydata)**2 > 0.0005:return
         makeGraph.makeNeighborGraph(self.ld, self.selectedNode)
         if self.main.mode.get()==0:
@@ -85,6 +85,29 @@ class DrawGraph:
                                 edge_color=nx.get_edge_attributes(G, 'color'),
                                 scale=(3,3),
                                 annotations = {x:self.ld.annotation[x] for x in G.edges},
+                                edge_width = 1,
+                                arrows=True,
+                                ax=self.main.ax2
+        )
+        self.main.canvas.draw_idle()
+        return
+
+    def drawNetworkGraph(self):
+        self.main.fig.canvas.mpl_connect('button_press_event', self.clickEvent)
+        self.main.fig.canvas.mpl_connect('button_release_event', self.releaseEvent)
+        self.main.ax2.clear()
+        self.I = netgraph.InteractiveGraph(self.ld.networkG,
+                                node_layout=self.ld.neighborPos,
+                                node_labels=dict(zip(self.ld.networkG.nodes,self.ld.networkG.nodes)),
+                                node_label_bbox=dict(fc="lightgreen", ec="black", boxstyle="square", lw=3),
+                                node_size=6   ,
+                                node_color={node:"tab:"+(self.ld.NODE_COLOR[self.ld.node_type[node]] if self.ld.activate[node] else "grey") for node in self.ld.networkG.nodes},
+                                edge_labels=nx.get_edge_attributes(self.ld.networkG, 'weight'),
+                                edge_label_position=0.8,
+                                edge_label_fontdict = {"fontsize":9.5,"bbox":{"alpha":0}},
+                                edge_color=nx.get_edge_attributes(self.ld.networkG, 'color'),
+                                scale=(3,3),
+                                annotations = {x:self.ld.annotation[x] for x in self.ld.networkG.edges},
                                 edge_width = 1,
                                 arrows=True,
                                 ax=self.main.ax2

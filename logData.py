@@ -12,11 +12,12 @@ def extract(text):
 
 class LogData:
     # Class initialize
-    def __init__(self, filename, data_cnt, main):
+    def __init__(self, filename, main):
         self.node_cnt = 1
         self.rootG = nx.DiGraph()
         self.entireG = nx.DiGraph()
         self.neighborG = nx.DiGraph()
+        self.networkG = nx.DiGraph()
         self.ranks = {}
         self.annotation = {}
         self.prr = {2:[0,1]}
@@ -25,10 +26,8 @@ class LogData:
         self.LOGFILE_NAME = filename
         self.NODE_TYPE = [None, "AP", "SENSOR", "ACTUATOR", "ROUTER", "VSENSOR", "DEACTIVATED"]
         self.NODE_COLOR = [None, "red", "blue", "green", "cyan", "orange", "grey"]
-        self.NODE_EDGECOLOR = ["white", "white", "black", "white", "white", "black"]
         self.maxSequence = tk.IntVar(value=0)
         self.main = main
-        self.data_cnt = data_cnt
 
     def nodeInfo(self, line:str):
         sections = extract(line)
@@ -43,15 +42,23 @@ class LogData:
 
     def graphInfo(self):
         for i in range(1, self.node_cnt+1):
-            self.entireG.add_node(i)#, name=i, color=self.NODE_COLOR[self.node_type[i]], edge_color=self.NODE_EDGECOLOR[self.node_type[i]])
-            self.rootG.add_node(i)#, name=i,color=self.NODE_COLOR[self.node_type[i]], edge_color=self.NODE_EDGECOLOR[self.node_type[i]])
+            self.entireG.add_node(i)
+            self.rootG.add_node(i)
+            self.networkG.add_node(i)
+            if i!=1:
+                if self.incoming[i][self.parent[i]]==0:
+                    prr1 = self.outgoing[self.parent[i]][i]
+                    prr2 = self.incoming[self.parent[i]][i]
+                else:
+                    prr1 = self.incoming[i][self.parent[i]]
+                    prr2 = self.outgoing[i][self.parent[i]]
+                self.networkG.add_weighted_edges_from([(self.parent[i],i,prr1)],color="red")
+                self.networkG.add_weighted_edges_from([(i,self.parent[i],prr2)], color="blue")
             for j in range(i+1, self.node_cnt+1):
                 if i==j or self.outgoing[i][j]==0: continue
-                self.entireG.add_edge(i, j, color="red")#, weight=incoming[i][j] if incoming[i][j]!=0 else outgoing[i][j])
+                self.entireG.add_edge(i, j, color="red")
                 self.entireG.add_edge(j, i, color="blue")
-
-        self.pos = nx.spring_layout(self.entireG)
-        self.neighborPos = self.pos
+        self.neighborPos = nx.spring_layout(self.entireG)
 
         self.annotation = {i:self.NODE_TYPE[self.node_type[i]] for i in range(1,self.node_cnt+1)}
         for i in range(1, self.node_cnt+1):
@@ -119,6 +126,7 @@ class LogData:
             self.main.modeRadio1["state"] = "active"
             self.main.modeRadio2["state"] = "active"
             self.main.modeRadio3["state"] = "active"
+            self.main.modeRadio4["state"] = "active"
             self.main.menuButton["state"] = "disabled"
             self.main.statusText.set_text("Graph is ready to draw\nPress a radio button on the left side.")
             self.main.canvas.draw_idle()

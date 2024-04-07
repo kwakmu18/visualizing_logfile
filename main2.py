@@ -10,10 +10,9 @@ import subprocess
 import faulthandler; faulthandler.enable()
 
         # ------------------------------------------------- Constants ----------------------------------------------- #
-FILENAME = "log.txt"
+FILENAME = "log2.txt"
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 57600
-DATA_CNT = 487
         # ------------------------------------------------- Constants ----------------------------------------------- #
 
 class TkinterUI:
@@ -22,7 +21,7 @@ class TkinterUI:
         self.window = ttk.Window(themename="minty")
         self.mode = tk.IntVar(value=2)
 
-        self.ld = logData.LogData(FILENAME, DATA_CNT, self)
+        self.ld = logData.LogData(FILENAME, self)
         self.dg = drawGraph.DrawGraph(self, self.ld)
 
         self.window.geometry("1920x1080")
@@ -57,15 +56,18 @@ class TkinterUI:
         self.lbox.config(xscrollcommand=self.hscroll.set, yscrollcommand=self.vscroll.set)
 
         self.modeRadio1 = ttk.Radiobutton(self.buttonFrame, text="root node", variable=self.mode, value=0, command=self.radioButtonPressed)
-        self.modeRadio1.place(x=50, y=20)
+        self.modeRadio1.place(x=80, y=7)
         self.modeRadio2 = ttk.Radiobutton(self.buttonFrame, text="neighbor", variable=self.mode, value=1, command=self.radioButtonPressed)
-        self.modeRadio2.place(x=150, y=20)
+        self.modeRadio2.place(x=80, y=27)
         self.modeRadio3 = ttk.Radiobutton(self.buttonFrame, text="entire map", variable=self.mode, value=2, command=self.radioButtonPressed)
-        self.modeRadio3.place(x=250, y=20)
+        self.modeRadio3.place(x=200, y=7)
+        self.modeRadio4 = ttk.Radiobutton(self.buttonFrame, text="network result", variable=self.mode, value=3, command=self.radioButtonPressed)
+        self.modeRadio4.place(x=200, y=27)
 
         self.modeRadio1["state"] = "disabled"
         self.modeRadio2["state"] = "disabled"
         self.modeRadio3["state"] = "disabled"
+        self.modeRadio4["state"] = "disabled"
 
         self.startButton = ttk.Button(self.buttonFrame, text="START", command=self.startButtonPressed)
         self.menuButton = ttk.Menubutton(self.buttonFrame, text="Menu")
@@ -150,6 +152,8 @@ class TkinterUI:
         elif self.mode.get()==1:
             makeGraph.makeNeighborGraph(self.ld, self.dg.selectedNode)
             self.dg.drawNeighborGraph()
+        elif self.mode.get()==3:
+            self.dg.drawNetworkGraph()
         else:
             self.dg.drawRootGraph()
         return
