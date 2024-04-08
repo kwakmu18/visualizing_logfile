@@ -10,7 +10,7 @@ import subprocess
 import faulthandler; faulthandler.enable()
 
         # ------------------------------------------------- Constants ----------------------------------------------- #
-FILENAME = "log2.txt"
+FILENAME = "log3.txt"
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 57600
         # ------------------------------------------------- Constants ----------------------------------------------- #
@@ -171,7 +171,7 @@ class TkinterUI:
                 with open(FILENAME, "w") as f: pass
         if not self.isDebug.get():
             try:
-                serial.Serial(PORT, BAUD_RATE)
+                serial.Serial(PORT, BAUD_RATE).close()
             except serial.serialutil.SerialException:
                 msgbox.showwarning("ERROR", "Device is not ready.")
                 return
@@ -237,7 +237,7 @@ class TkinterUI:
     def upload(self):
         if not self.isDebug.get():
             try:
-                serial.Serial(PORT, BAUD_RATE)
+                serial.Serial(PORT, BAUD_RATE).close()
             except serial.serialutil.SerialException:
                 msgbox.showwarning("ERROR", "Device is not ready.\n or please execute with root permission.")
                 return

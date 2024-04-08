@@ -18,15 +18,7 @@ class DrawGraph:
                 return
 
     def releaseEvent(self, event):
-        if self.selectedNode==None or self.main.mode.get()==2 or self.main.mode.get()==3: return
-        if (self.originalX - event.xdata)**2 + (self.originalY - event.ydata)**2 > 0.0005:return
-        makeGraph.makeNeighborGraph(self.ld, self.selectedNode)
-        if self.main.mode.get()==0:
-            makeGraph.makeRootGraph(self.ld, self.selectedNode)
-            self.drawRootGraph()
-        else:
-            self.drawNeighborGraph()
-        
+        if self.selectedNode==None: return
         if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="VSENSOR" or \
             self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="SENSOR":
             self.main.activateButton["state"] = "active"
@@ -40,8 +32,17 @@ class DrawGraph:
             self.main.activateButton["state"] = "disabled"
             self.ld.maxSequence.set(0)
             self.main.prrProgressBar.configure(mask="{}%"+f"(0/0)")
-
         self.main.drawInfo()
+        if self.main.mode.get()==2 or self.main.mode.get()==3: return
+        if (self.originalX - event.xdata)**2 + (self.originalY - event.ydata)**2 > 0.0005:return
+        makeGraph.makeNeighborGraph(self.ld, self.selectedNode)
+        if self.main.mode.get()==0:
+            makeGraph.makeRootGraph(self.ld, self.selectedNode)
+            self.drawRootGraph()
+        else:
+            self.drawNeighborGraph()
+
+        
         self.originalX = None
         self.originalY = None
 
