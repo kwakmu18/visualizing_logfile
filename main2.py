@@ -10,7 +10,6 @@ import subprocess
 import faulthandler; faulthandler.enable()
 
         # ------------------------------------------------- Constants ----------------------------------------------- #
-FILENAME = "log3.txt"
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 57600
         # ------------------------------------------------- Constants ----------------------------------------------- #
@@ -21,7 +20,7 @@ class TkinterUI:
         self.window = ttk.Window(themename="minty")
         self.mode = tk.IntVar(value=2)
 
-        self.ld = logData.LogData(FILENAME, self)
+        self.ld = logData.LogData("log.txt", self)
         self.dg = drawGraph.DrawGraph(self, self.ld)
 
         self.window.geometry("1920x1080")
@@ -70,12 +69,12 @@ class TkinterUI:
         self.modeRadio4["state"] = "disabled"
 
         self.startButton = ttk.Button(self.buttonFrame, text="START", command=self.startButtonPressed)
-        self.menuButton = ttk.Menubutton(self.buttonFrame, text="Menu")
+        self.configButton = ttk.Button(self.buttonFrame, text="Configuration", command=self.configButtonPressed)
         self.resetLayoutButton = ttk.Button(self.buttonFrame, text="Reset Layout",  command=self.resetLayoutButtonPressed)
         self.activateButton = ttk.Button(self.buttonFrame, text="Deactivate Node",  command = self.activateButtonPressed)
 
         self.startButton.place(x=10, y=50, width=175, height=50)
-        self.menuButton.place(x=185, y=50, width=175, height=50)
+        self.configButton.place(x=185, y=50, width=175, height=50)
         self.resetLayoutButton.place(x=10, y=100, width=175, height=50)
         self.activateButton.place(x=185, y=100, width=175, height=50)
 
@@ -84,13 +83,7 @@ class TkinterUI:
 
         self.isReset = tk.BooleanVar()
         self.isDebug = tk.BooleanVar()
-        
-        self.menu = tk.Menu(self.menuButton, tearoff=0)
-        self.menu.add_command(label="Binary Upload", command=self.binaryUpload)
-        self.menu.add_checkbutton(label="Reset Logfile", onvalue=1, offvalue=0, variable=self.isReset)
-        self.menu.add_checkbutton(label="Debugging Mode", onvalue=1, offvalue=0, variable=self.isDebug)
-        self.menuButton["menu"] = self.menu
-
+        self.logFileName = tk.StringVar()
 
         self.prrLabel = ttk.Label(self.infoFrame, text="Node PRR")
         self.prrLabel.place(x=10, y=110, width=150, height=20)
@@ -161,14 +154,17 @@ class TkinterUI:
     def terminate(self):
         self.ld.event.set()
         self.window.destroy()
+    def terminateTop(self):
+        self.ld.logfile_name = self.logFileName.get()
+        self.top.destroy()
 
     def startButtonPressed(self):
         if self.isReset.get():
             try:
-                os.remove(FILENAME)
-                with open(FILENAME, "w") as f: pass
+                os.remove(self.logFileName.get())
+                with open(self.logFileName.get(), "w") as f: pass
             except FileNotFoundError:
-                with open(FILENAME, "w") as f: pass
+                with open(self.logFileName.get(), "w") as f: pass
         if not self.isDebug.get():
             try:
                 serial.Serial(PORT, BAUD_RATE).close()
@@ -179,26 +175,35 @@ class TkinterUI:
         else:
             serialThread = threading.Thread(target=self.ld.logfile)
         serialThread.start()
+        self.statusText.set_text("STARTED")
+        self.canvas.draw_idle()
         self.startButton["state"] = "disabled"
-    def binaryUpload(self):
-        top = tk.Toplevel(self.window)
-        top.attributes("-topmost", 1)
-        top.geometry("400x600")
-        top.title("Binary Upload")
+        self.configButton["state"] = "disabled"
+    def configButtonPressed(self):
+        self.top = ttk.Toplevel(self.window)
+        self.top.protocol("WM_DELETE_WINDOW", self.terminateTop)
+        self.window.protocol("WM_DELETE_WINDOW", self.terminate)
+        self.top.attributes("-topmost", 1)
+        self.top.geometry("800x600")
+        self.top.title("Binary Upload")
         self.contiki_path, self.node_cnt, self.actuator_id, self.node_id, self.node_type, self.data_cnt = \
             (tk.StringVar() for _ in range(6))
-        contiki_path_label = ttk.Label(top, text="Contiki-NG Path : ")
-        self.contiki_path_input = ttk.Entry(top, textvariable = self.contiki_path)
-        node_cnt_label = ttk.Label(top, text="Node Cnt : ")
-        self.node_cnt_input = ttk.Entry(top, textvariable=self.node_cnt)
-        actuator_id_label = ttk.Label(top, text="Actuator ID : ")
-        self.actuator_id_input = ttk.Entry(top, textvariable=self.actuator_id)
-        node_id_label = ttk.Label(top, text="Node ID : ")
-        node_id_input = ttk.Entry(top, textvariable=self.node_id)
-        node_type_label = ttk.Label(top, text="Node Type : ")
-        node_type_input = ttk.Combobox(top, values=self.ld.NODE_TYPE[1:-1], textvariable=self.node_type)
-        data_cnt_label = ttk.Label(top, text="Data Cnt : ")
-        self.data_cnt_input = ttk.Entry(top, textvariable=self.data_cnt)
+        contiki_path_label = ttk.Label(self.top, text="Contiki-NG Path : ")
+        self.contiki_path_input = ttk.Entry(self.top, textvariable = self.contiki_path)
+        node_cnt_label = ttk.Label(self.top, text="Node Cnt : ")
+        self.node_cnt_input = ttk.Entry(self.top, textvariable=self.node_cnt)
+        actuator_id_label = ttk.Label(self.top, text="Actuator ID : ")
+        self.actuator_id_input = ttk.Entry(self.top, textvariable=self.actuator_id)
+        node_id_label = ttk.Label(self.top, text="Node ID : ")
+        node_id_input = ttk.Entry(self.top, textvariable=self.node_id)
+        node_type_label = ttk.Label(self.top, text="Node Type : ")
+        node_type_input = ttk.Combobox(self.top, values=self.ld.NODE_TYPE[1:-1], textvariable=self.node_type)
+        data_cnt_label = ttk.Label(self.top, text="Data Cnt : ")
+        self.data_cnt_input = ttk.Entry(self.top, textvariable=self.data_cnt)
+        reset_check = ttk.Checkbutton(self.top, text="Reset Logfile", variable=self.isReset, onvalue=1, offvalue=0)
+        debugging_check = ttk.Checkbutton(self.top, text="Debugging Mode", variable=self.isDebug, onvalue=1, offvalue=0)
+        logfile_name_label = ttk.Label(self.top, text="Logfile Name : ")
+        logfile_name_input = ttk.Entry(self.top, textvariable=self.logFileName)
 
         self.contiki_path_input.insert(0, "/home/mckkk119/CNLAB_EV/contiki-ng")
         self.node_cnt_input.insert(0, "4")
@@ -208,26 +213,30 @@ class TkinterUI:
         node_type_input.insert(0, "AP")
 
         contiki_path_label.place(x=10, y=10)
-        self.contiki_path_input.place(x=120, y=10, width=260, height=25)
+        self.contiki_path_input.place(x=130, y=10, width=260, height=25)
         node_cnt_label.place(x=10, y=45)
-        self.node_cnt_input.place(x=120, y=45, width=260, height=25)
+        self.node_cnt_input.place(x=130, y=45, width=260, height=25)
         actuator_id_label.place(x=10, y=80)
-        self.actuator_id_input.place(x=120, y=80, width=260, height=25)
+        self.actuator_id_input.place(x=130, y=80, width=260, height=25)
         node_id_label.place(x=10, y=115)
-        node_id_input.place(x=120, y=115, width=260, height=25)
+        node_id_input.place(x=130, y=115, width=260, height=25)
         node_type_label.place(x=10, y=150)
-        node_type_input.place(x=120, y=150, width=260, height=25)
+        node_type_input.place(x=130, y=150, width=260, height=25)
         data_cnt_label.place(x=10, y=185)
-        self.data_cnt_input.place(x=120, y=185, width=260, height=25)
+        self.data_cnt_input.place(x=130, y=185, width=260, height=25)
+        reset_check.place(x=410, y=10, height=25)
+        debugging_check.place(x=550, y=10, height=25)
+        logfile_name_label.place(x=410, y=45)
+        logfile_name_input.place(x=530, y=45, width=260, height=25)
 
-        uploadButton = tk.Button(top, text="Upload to node", command=self.upload)
+        uploadButton = tk.Button(self.top, text="Upload to node", command=self.upload)
         uploadButton.place(x=10, y=220, width=380, height=70)
 
-        self.uploadLog = tk.Listbox(top)
+        self.uploadLog = tk.Listbox(self.top)
         self.uploadLog.place(x=10, y=300, width=360, height=260)
 
-        vscroll = tk.Scrollbar(top, orient="vertical")
-        hscroll = tk.Scrollbar(top, orient="horizontal")
+        vscroll = ttk.Scrollbar(self.top, orient="vertical", bootstyle="default")
+        hscroll = ttk.Scrollbar(self.top, orient="horizontal", bootstyle="default")
         vscroll.config(command=self.uploadLog.yview)
         hscroll.config(command=self.uploadLog.xview)
         vscroll.place(x=370, y=300, width=20, height=260)
@@ -360,8 +369,7 @@ class TkinterUI:
         )
 
         self.nodeTypeLabel["text"] = self.ld.NODE_TYPE[self.ld.node_type[self.dg.selectedNode]]+"\n  ‭ ‭ ‭ ‭ ‭ ‭ ‭ ‭ ‭ ‭ ‭ ‭ ‭ "
-
-        #self.ld.NODE_TYPE[self.ld.node_type[self.dg.selectedNode]
-        #Canvas 위젯 생성 및 그래프 출력
         self.nodeIDCanvas.draw_idle()
-TkinterUI()
+
+if __name__ == "__main__":
+    TkinterUI()
