@@ -335,8 +335,16 @@ class TkinterUI:
 
     def resetLayoutButtonPressed(self):
         self.ld.neighborPos = nx.spring_layout(self.ld.entireG)
-        if self.mode.get()==1: self.dg.drawNeighborGraph()
-        else: self.dg.drawRootGraph()
+        if self.mode.get()==0:
+            makeGraph.makeRootGraph(self.ld, self.dg.selectedNode)
+            self.dg.drawRootGraph()
+        elif self.mode.get()==1:
+            makeGraph.makeNeighborGraph(self.ld, self.dg.selectedNode)
+            self.dg.drawNeighborGraph()
+        elif self.mode.get()==3:
+            self.dg.drawNetworkGraph()
+        else:
+            self.dg.drawRootGraph()
 
     def activateButtonPressed(self):
         if self.isDebug.get(): 
