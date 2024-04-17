@@ -1,12 +1,11 @@
 import drawGraph, logData, makeGraph
-import threading, os, serial, networkx as nx, netgraph
+import threading, os, serial, netgraph, subprocess, networkx as nx
 import tkinter as tk
 import tkinter.messagebox as msgbox
 import ttkbootstrap as ttk
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_tkagg import FigureCanvasTkAgg
 from matplotlib import gridspec
-import subprocess
 import faulthandler; faulthandler.enable()
 
         # ------------------------------------------------- Constants ----------------------------------------------- #
@@ -159,12 +158,6 @@ class TkinterUI:
         self.top.destroy()
 
     def startButtonPressed(self):
-        if self.isReset.get():
-            try:
-                os.remove(self.logFileName.get())
-                with open(self.logFileName.get(), "w") as f: pass
-            except FileNotFoundError:
-                with open(self.logFileName.get(), "w") as f: pass
         if not self.isDebug.get():
             try:
                 serial.Serial(PORT, BAUD_RATE).close()
@@ -174,6 +167,12 @@ class TkinterUI:
             serialThread = threading.Thread(target=self.ld.serial)
         else:
             serialThread = threading.Thread(target=self.ld.logfile)
+        if self.isReset.get():
+            try:
+                os.remove(self.logFileName.get())
+                with open(self.logFileName.get(), "w") as f: pass
+            except FileNotFoundError:
+                with open(self.logFileName.get(), "w") as f: pass
         serialThread.start()
         self.statusText.set_text("STARTED")
         self.canvas.draw_idle()
