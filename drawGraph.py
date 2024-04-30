@@ -19,8 +19,7 @@ class DrawGraph:
 
     def releaseEvent(self, event):
         if self.selectedNode==None: return
-        if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="VSENSOR" or \
-            self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]]=="SENSOR":
+        if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]] in ["VSENSOR-ACTIVATED", "SENSOR"]:
             self.main.activateButton["state"] = "active"
             self.main.prrProgressBar.configure(mask="{}%"+f"({self.ld.prr[self.selectedNode][0]}/{self.ld.prr[self.selectedNode][1]})")
             self.ld.maxSequence.set(int(self.ld.prr[self.selectedNode][0]/self.ld.prr[self.selectedNode][1]*100))

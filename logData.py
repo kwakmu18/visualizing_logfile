@@ -1,7 +1,6 @@
 import networkx as nx
-import re
 from time import sleep
-import threading, serial
+import threading, serial, socket, re
 import tkinter as tk
 
 def extract(text):
@@ -12,7 +11,7 @@ def extract(text):
 
 class LogData:
     # Class initialize
-    def __init__(self, filename, main):
+    def __init__(self, filename, socket_ip, socket_port, main):
         self.node_cnt = 1
         self.rootG = nx.DiGraph()
         self.entireG = nx.DiGraph()
@@ -24,10 +23,12 @@ class LogData:
         self.event = threading.Event()
         self.logfile_name = filename
         self.ROOT_NODE = 1
-        self.NODE_TYPE = [None, "AP", "SENSOR", "ACTUATOR", "ROUTER", "VSENSOR", "DEACTIVATED"]
+        self.NODE_TYPE = [None, "AP", "SENSOR", "ACTUATOR", "ROUTER", "VSENSOR-ACTIVATED", "VSENSOR-DEACTIVATED"]
         self.NODE_COLOR = [None, "red", "blue", "green", "cyan", "orange", "grey"]
         self.maxSequence = tk.IntVar(value=0)
         self.main = main
+        self.socket_ip = socket_ip
+        self.socket_port = socket_port
 
     def nodeInfo(self, line:str):
         sections = extract(line)
@@ -122,6 +123,7 @@ class LogData:
             self.nodeInfo(line)
         elif line.find("===END-OF-NI===")!=-1:
             self.graphInfo()
+            self.main.socketThread.start()
             self.main.resetLayoutButton["state"] = "active"
             self.main.modeRadio1["state"] = "active"
             self.main.modeRadio2["state"] = "active"
@@ -159,8 +161,41 @@ class LogData:
         self.main.lbox.see(tk.END)
 
     def changeLabel(self, index):
-        if self.NODE_TYPE[self.node_type[self.dg.selectedNode]]=="VSENSOR" or \
-            self.NODE_TYPE[self.node_type[self.dg.selectedNode]]=="SENSOR":
+        if self.NODE_TYPE[self.node_type[self.dg.selectedNode]] in ["VSENSOR-ACTIVATED", "VSENSOR-DEACTIVATED", "SENSOR"]:
             self.maxSequence.set(int(self.prr[index][0]/self.prr[index][1]*100))
             self.main.prrProgressBar.configure(mask="{}%"+f"({self.prr[self.dg.selectedNode][0]}/{self.prr[self.dg.selectedNode][1]})")
-        
+    
+    # Socket Communication
+    def socketCommunication(self):
+        self.sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        server_address = ("192.168.0.159", self.socket_port)
+
+        self.sock.bind(server_address)
+        self.sock.setblocking(False)
+        self.sock.listen(1)
+        print("good")
+        while True:
+            try:
+                conn, client_address = self.sock.accept()
+                break
+            except BlockingIOError:
+                continue
+    
+        print(client_address)
+
+        while True:
+            if self.event.is_set():break
+            try:
+                data = eval(conn.recv(1024).decode())[1]
+                if data=="on":
+                    print("SENSOR ON")
+                    if self.activate[4]: continue
+                    self.dg.selectedNode = 4
+                    self.main.activateButtonPressed()
+                elif data=="off":
+                    print("SENSOR OFF")
+                    if not self.activate[4]: continue
+                    self.dg.selectedNode = 4
+                    self.main.activateButtonPressed()
+            except BlockingIOError:
+                continue
