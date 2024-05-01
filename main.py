@@ -169,7 +169,6 @@ class TkinterUI:
                 msgbox.showwarning("ERROR", "Device is not ready.")
                 return
             serialThread = threading.Thread(target=self.ld.serial)
-            self.socketThread = threading.Thread(target=self.ld.socketCommunication)
         else:
             serialThread = threading.Thread(target=self.ld.logfile)
             self.socketThread = threading.Thread(target=self.ld.socketCommunication)

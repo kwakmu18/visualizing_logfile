@@ -123,7 +123,7 @@ class LogData:
             self.nodeInfo(line)
         elif line.find("===END-OF-NI===")!=-1:
             self.graphInfo()
-            self.main.socketThread.start()
+            if self.main.isDebug.get(): self.main.socketThread.start()
             self.main.resetLayoutButton["state"] = "active"
             self.main.modeRadio1["state"] = "active"
             self.main.modeRadio2["state"] = "active"
