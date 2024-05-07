@@ -109,7 +109,7 @@ class TkinterUI:
 
         node_proxy_artists = []
         for i in range(1,len(self.ld.NODE_COLOR)):
-            if self.ld.NODE_TYPE[i] in ["ACTUATOR", "SENSOR"]: continue
+            if self.ld.NODE_TYPE[i] == "ACTUATOR": continue
             proxy = plt.Line2D(
                 [], [],
                 linestyle='None',
@@ -156,7 +156,7 @@ class TkinterUI:
     def terminate(self):
         self.ld.event.set()
         self.window.destroy()
-        self.ld.sock.close()
+        if not self.isDebug.get(): self.ld.sock.close()
     def terminateTop(self):
         self.ld.logfile_name = self.logFileName.get()
         self.top.destroy()
@@ -169,9 +169,10 @@ class TkinterUI:
                 msgbox.showwarning("ERROR", "Device is not ready.")
                 return
             serialThread = threading.Thread(target=self.ld.serial)
+            self.socketThread = threading.Thread(target=self.ld.socketCommunication)
         else:
             serialThread = threading.Thread(target=self.ld.logfile)
-            self.socketThread = threading.Thread(target=self.ld.socketCommunication)
+            
         if self.isReset.get():
             try:
                 os.remove(self.logFileName.get())
@@ -338,10 +339,14 @@ class TkinterUI:
         else:
             self.dg.drawRootGraph()
 
-    def activateButtonPressed(self):
+    def activateButtonPressed(self, ai=False):
         if self.isDebug.get(): 
             msgbox.showwarning("ERROR", "Can't use on DEBUG MODE.")
             return
+        if ai==False:
+            yesno_msgbox = msgbox.askquestion("Warning",
+                                          "Are you sure to %s node %d?"%("deactivate" if self.ld.activate[self.dg.selectedNode] else "activate", self.dg.selectedNode))
+            if yesno_msgbox=="no": return
         if self.ld.activate[self.dg.selectedNode]:
             self.activateButton["text"] = "Activate Node"
             self.ld.activate[self.dg.selectedNode] = False

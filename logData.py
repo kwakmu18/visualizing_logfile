@@ -21,6 +21,7 @@ class LogData:
         self.annotation = {}
         self.prr = {2:[0,1]}
         self.event = threading.Event()
+        self.socketConnected = False
         self.logfile_name = filename
         self.ROOT_NODE = 1
         self.NODE_TYPE = [None, "AP", "SENSOR", "ACTUATOR", "ROUTER", "VSENSOR-ACTIVATED", "VSENSOR-DEACTIVATED"]
@@ -123,7 +124,7 @@ class LogData:
             self.nodeInfo(line)
         elif line.find("===END-OF-NI===")!=-1:
             self.graphInfo()
-            if self.main.isDebug.get(): self.main.socketThread.start()
+            if not self.main.isDebug.get(): self.main.socketThread.start()
             self.main.resetLayoutButton["state"] = "active"
             self.main.modeRadio1["state"] = "active"
             self.main.modeRadio2["state"] = "active"
@@ -141,12 +142,12 @@ class LogData:
             now = int(line[2].split("V")[0])
             self.prr[index][1]=now
             self.changeLabel(index)
-            
-        elif line.startswith("[D]"):
-            line = line.split(":")
-            index = int(line[2])
-            self.prr[index][1]=now
-            self.changeLabel(index)
+            if self.socketConnected: self.conn.send(("[%d : %d]"%(index,now)).encode())            
+        # elif line.startswith("[D]"):
+        #     line = line.split(":")
+        #     index = int(line[2])
+        #     self.prr[index][1]=now
+        #     self.changeLabel(index)
 
         elif line.startswith("[S]"):
             line = line.split(":")
@@ -154,6 +155,7 @@ class LogData:
             now = int(line[2].split("D")[0])
             self.prr[index][1]=now
             self.changeLabel(index)
+            if self.socketConnected: self.conn.send(("[%d : %d]"%(index,now)).encode())
 
     def appendLog(self, line):
         self.main.lbox.insert(tk.END, line)
@@ -173,29 +175,30 @@ class LogData:
         self.sock.bind(server_address)
         self.sock.setblocking(False)
         self.sock.listen(1)
-        print("good")
         while True:
             try:
-                conn, client_address = self.sock.accept()
+                self.conn, client_address = self.sock.accept()
                 break
             except BlockingIOError:
                 continue
-    
+        self.socketConnected = True
         print(client_address)
 
         while True:
             if self.event.is_set():break
             try:
-                data = eval(conn.recv(1024).decode())[1]
+                data = eval(self.conn.recv(1024).decode())[1]
                 if data=="on":
                     print("SENSOR ON")
                     if self.activate[4]: continue
                     self.dg.selectedNode = 4
-                    self.main.activateButtonPressed()
+                    self.main.activateButtonPressed(ai=True)
                 elif data=="off":
                     print("SENSOR OFF")
                     if not self.activate[4]: continue
                     self.dg.selectedNode = 4
-                    self.main.activateButtonPressed()
+                    self.main.activateButtonPressed(ai=True)
             except BlockingIOError:
+                continue
+            except Exception:
                 continue
