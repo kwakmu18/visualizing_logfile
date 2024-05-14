@@ -30,6 +30,8 @@ class LogData:
         self.main = main
         self.socket_ip = socket_ip
         self.socket_port = socket_port
+        self.spattern = r"\[S\]:(\d{1,}):(\d{1,})DA(\d{2}.\d{2})(\d{2}\.\d{2})(\d{2}\.\d{2})(\d{1,4})EN"
+        self.vpattern = r"\[V\]:(\d{1}):(\d{1,})VIRTUAL-SENSOR"
 
     def nodeInfo(self, line:str):
         sections = extract(line)
@@ -105,6 +107,7 @@ class LogData:
             self.processLine(line)
         
     def processLine(self, line):
+        if line == "":return
         self.appendLog(line)
         if line.find("add new NBR")!=-1:
             self.node_cnt += 1
@@ -137,35 +140,44 @@ class LogData:
             source = re.search(r"source=\((\d+)\): num-of-data=\((\d+)\)", line)
             self.prr[int(source.group(1))][0] = int(source.group(2))
         elif line.startswith("[V]"):
-            line = line.split(":")
-            index = int(line[1])
-            now = int(line[2].split("V")[0])
+            matches = re.search(self.vpattern, line)
+            index = int(matches.group(1))
+            now = int(matches.group(2))
             self.prr[index][1]=now
-            self.changeLabel(index)
-            if self.socketConnected: self.conn.send(("[%d : %d]"%(index,now)).encode())            
-        # elif line.startswith("[D]"):
-        #     line = line.split(":")
-        #     index = int(line[2])
-        #     self.prr[index][1]=now
-        #     self.changeLabel(index)
+            self.changeLabel(index)            
 
         elif line.startswith("[S]"):
-            line = line.split(":")
-            index = int(line[1])
-            now = int(line[2].split("D")[0])
+            matches = re.search(self.spattern, line)
+            index = int(matches.group(1))
+            now = int(matches.group(2))
+            so2 = float(matches.group(3))
+            no2 = float(matches.group(4))
+            nh3 = float(matches.group(5))
+            co2 = int(matches.group(6))
             self.prr[index][1]=now
-            self.changeLabel(index)
-            if self.socketConnected: self.conn.send(("[%d : %d]"%(index,now)).encode())
+            self.changeLabel(index, [so2,no2,nh3,co2])
+            if self.socketConnected: self.conn.send(("%d %f %f %f %d")%(index, so2, no2, nh3, co2).encode())
 
     def appendLog(self, line):
         self.main.lbox.insert(tk.END, line)
         self.main.lbox.update()
         self.main.lbox.see(tk.END)
 
-    def changeLabel(self, index):
+    def changeLabel(self, index, datas=[0,0,0,0]):
         if self.NODE_TYPE[self.node_type[self.dg.selectedNode]] in ["VSENSOR-ACTIVATED", "VSENSOR-DEACTIVATED", "SENSOR"]:
             self.maxSequence.set(int(self.prr[index][0]/self.prr[index][1]*100))
             self.main.prrProgressBar.configure(mask="{}%"+f"({self.prr[self.dg.selectedNode][0]}/{self.prr[self.dg.selectedNode][1]})")
+            if self.NODE_TYPE[self.node_type[self.dg.selectedNode]] == "SENSOR":
+                self.main.so2DataLabel["text"] = "%05.2f"%datas[0]
+                self.main.no2DataLabel["text"] = "%05.2f"%datas[1]
+                self.main.nh3DataLabel["text"] = "%05.2f"%datas[2]
+                self.main.co2DataLabel["text"] = "%04d"%datas[3]
+                #self.main.canvas.draw_idle()
+            else:
+                self.main.so2DataLabel["text"] = "00.00"
+                self.main.no2DataLabel["text"] = "00.00"
+                self.main.nh3DataLabel["text"] = "00.00"
+                self.main.co2DataLabel["text"] = "0000"
     
     # Socket Communication
     def socketCommunication(self):

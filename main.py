@@ -40,10 +40,13 @@ class TkinterUI:
         self.infoFrame.place(x=400, y=800, width=390, height=190)
 
         self.nodeIDFrame = ttk.LabelFrame(self.infoFrame, text="Node ID", labelanchor="n")
-        self.nodeIDFrame.place(x=80, y=10, width=100, height=100)
+        self.nodeIDFrame.place(x=10, y=10, width=100, height=110)
 
         self.nodeTypeFrame = ttk.LabelFrame(self.infoFrame, text="Node Type", labelanchor="n")
-        self.nodeTypeFrame.place(x=200, y=10, width=100, height=100)
+        self.nodeTypeFrame.place(x=120, y=10, width=100, height=110)
+
+        self.sensorDataFrame = ttk.LabelFrame(self.infoFrame, text="Sensor Data", labelanchor="n")
+        self.sensorDataFrame.place(x=235, y=10, width=140, height=110)
 
         self.lbox = tk.Listbox(self.logFrame, bd=1)
         self.lbox.place(x=10, y=0, width=1060, height=150)
@@ -87,13 +90,31 @@ class TkinterUI:
         self.logFileName = tk.StringVar()
 
         self.prrLabel = ttk.Label(self.infoFrame, text="Node PRR")
-        self.prrLabel.place(x=10, y=110, width=150, height=20)
+        self.prrLabel.place(x=10, y=120, width=150, height=20)
 
         self.prrProgressBar = ttk.Floodgauge(self.infoFrame, variable=self.ld.maxSequence, mask="{}%"+"(0/0)")
-        self.prrProgressBar.place(x=10, y=130, width=370, height=20)
+        self.prrProgressBar.place(x=10, y=140, width=370, height=20)
 
         self.nodeTypeLabel = ttk.Label(self.nodeTypeFrame, text="", justify="center", font=(ttk.font.BOLD, 11))
         self.nodeTypeLabel.place(x=0, y=20, width=90, height=40)
+
+        self.so2Label = ttk.Label(self.sensorDataFrame, text="SO2")
+        self.so2DataLabel = ttk.Label(self.sensorDataFrame, text="00.00")
+        self.no2Label = ttk.Label(self.sensorDataFrame, text="NO2")
+        self.no2DataLabel = ttk.Label(self.sensorDataFrame, text="00.00")
+        self.nh3Label = ttk.Label(self.sensorDataFrame, text="NH3")
+        self.nh3DataLabel = ttk.Label(self.sensorDataFrame, text="00.00")
+        self.co2Label = ttk.Label(self.sensorDataFrame, text="CO2")
+        self.co2DataLabel = ttk.Label(self.sensorDataFrame, text="0000")
+
+        self.so2Label.place(x=20, y=5)
+        self.so2DataLabel.place(x=65, y=5)
+        self.no2Label.place(x=20, y=25)
+        self.no2DataLabel.place(x=65, y=25)
+        self.nh3Label.place(x=20, y=45)
+        self.nh3DataLabel.place(x=65, y=45)
+        self.co2Label.place(x=20, y=65)
+        self.co2DataLabel.place(x=65, y=65)
 
         # ------------------------------------------------ Configure UI ------------------------------------------------ #
 
@@ -156,7 +177,7 @@ class TkinterUI:
     def terminate(self):
         self.ld.event.set()
         self.window.destroy()
-        if not self.isDebug.get(): self.ld.sock.close()
+        if not self.isDebug.get() and self.ld.socketConnected : self.ld.sock.close()
     def terminateTop(self):
         self.ld.logfile_name = self.logFileName.get()
         self.top.destroy()
