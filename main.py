@@ -11,15 +11,15 @@ import faulthandler; faulthandler.enable()
         # ------------------------------------------------- Constants ----------------------------------------------- #
 PORT = "/dev/ttyUSB0"
 BAUD_RATE = 57600
-SOCKET_IP = "192.168.0.177"
-SOCKET_PORT = 8001
+SOCKET_IP = "192.168.0.159"
+SOCKET_PORT = 8000
         # ------------------------------------------------- Constants ----------------------------------------------- #
 
 class TkinterUI:
     def __init__(self):
         # ------------------------------------------------ Configure UI ------------------------------------------------ #
         self.window = ttk.Window(themename="minty")
-        self.mode = tk.IntVar(value=2)
+        self.drawMode = tk.IntVar(value=2)
 
         self.ld = logData.LogData("log.txt", SOCKET_IP, SOCKET_PORT, self)
         self.dg = drawGraph.DrawGraph(self, self.ld)
@@ -34,7 +34,10 @@ class TkinterUI:
         self.graphFrame.place(x=10, y=10, width=1890, height=780)
 
         self.logFrame = ttk.LabelFrame(self.window, text="Log Information", labelanchor="n") # log
-        self.logFrame.place(x=800, y=800, width=1100, height=190)
+        self.logFrame.place(x=800, y=800, width=700, height=190)
+
+        self.aiLogFrame = ttk.LabelFrame(self.window, text="AI Information", labelanchor="n") # log
+        self.aiLogFrame.place(x=1510, y=800, width=390, height=190)
 
         self.infoFrame = ttk.LabelFrame(self.window, text="Selected Node", labelanchor="n") # Node Information
         self.infoFrame.place(x=400, y=800, width=390, height=190)
@@ -48,23 +51,33 @@ class TkinterUI:
         self.sensorDataFrame = ttk.LabelFrame(self.infoFrame, text="Sensor Data", labelanchor="n")
         self.sensorDataFrame.place(x=235, y=10, width=140, height=110)
 
-        self.lbox = tk.Listbox(self.logFrame, bd=1)
-        self.lbox.place(x=10, y=0, width=1060, height=150)
-        self.vscroll = ttk.Scrollbar(self.logFrame, orient="vertical")
-        self.hscroll = ttk.Scrollbar(self.logFrame, orient="horizontal")
-        self.vscroll.config(command=self.lbox.yview)
-        self.hscroll.config(command=self.lbox.xview)
-        self.vscroll.place(x=1070, y=0, width=20, height=150)
-        self.hscroll.place(x=10,y=150, width=1070, height=20)
-        self.lbox.config(xscrollcommand=self.hscroll.set, yscrollcommand=self.vscroll.set)
+        self.logbox = tk.Listbox(self.logFrame, bd=1)
+        self.logbox.place(x=10, y=0, width=660, height=150)
+        self.logvscroll = ttk.Scrollbar(self.logFrame, orient="vertical")
+        self.loghscroll = ttk.Scrollbar(self.logFrame, orient="horizontal")
+        self.logvscroll.config(command=self.logbox.yview)
+        self.loghscroll.config(command=self.logbox.xview)
+        self.logvscroll.place(x=670, y=0, width=20, height=150)
+        self.loghscroll.place(x=10,y=150, width=670, height=20)
+        self.logbox.config(xscrollcommand=self.loghscroll.set, yscrollcommand=self.logvscroll.set)
 
-        self.modeRadio1 = ttk.Radiobutton(self.buttonFrame, text="root node", variable=self.mode, value=0, command=self.radioButtonPressed)
+        self.aiLogbox = tk.Listbox(self.aiLogFrame, bd=1)
+        self.aiLogbox.place(x=10, y=0, width=350, height=150)
+        self.ailogvscroll = ttk.Scrollbar(self.aiLogFrame, orient="vertical")
+        self.ailoghscroll = ttk.Scrollbar(self.aiLogFrame, orient="horizontal")
+        self.ailogvscroll.config(command=self.aiLogbox.yview)
+        self.ailoghscroll.config(command=self.aiLogbox.xview)
+        self.ailogvscroll.place(x=360, y=0, width=20, height=150)
+        self.ailoghscroll.place(x=10,y=150, width=360, height=20)
+        self.aiLogbox.config(xscrollcommand=self.ailoghscroll.set, yscrollcommand=self.ailogvscroll.set)
+
+        self.modeRadio1 = ttk.Radiobutton(self.buttonFrame, text="root node", variable=self.drawMode, value=0, command=self.radioButtonPressed)
         self.modeRadio1.place(x=80, y=7)
-        self.modeRadio2 = ttk.Radiobutton(self.buttonFrame, text="neighbor", variable=self.mode, value=1, command=self.radioButtonPressed)
+        self.modeRadio2 = ttk.Radiobutton(self.buttonFrame, text="neighbor", variable=self.drawMode, value=1, command=self.radioButtonPressed)
         self.modeRadio2.place(x=80, y=27)
-        self.modeRadio3 = ttk.Radiobutton(self.buttonFrame, text="entire map", variable=self.mode, value=2, command=self.radioButtonPressed)
+        self.modeRadio3 = ttk.Radiobutton(self.buttonFrame, text="entire map", variable=self.drawMode, value=2, command=self.radioButtonPressed)
         self.modeRadio3.place(x=200, y=7)
-        self.modeRadio4 = ttk.Radiobutton(self.buttonFrame, text="network result", variable=self.mode, value=3, command=self.radioButtonPressed)
+        self.modeRadio4 = ttk.Radiobutton(self.buttonFrame, text="network result", variable=self.drawMode, value=3, command=self.radioButtonPressed)
         self.modeRadio4.place(x=200, y=27)
 
         self.modeRadio1["state"] = "disabled"
@@ -87,7 +100,9 @@ class TkinterUI:
 
         self.isReset = tk.BooleanVar()
         self.isDebug = tk.BooleanVar()
+        self.aiFirst = tk.BooleanVar()
         self.logFileName = tk.StringVar()
+        self.isStarted = False
 
         self.prrLabel = ttk.Label(self.infoFrame, text="Node PRR")
         self.prrLabel.place(x=10, y=120, width=150, height=20)
@@ -162,13 +177,13 @@ class TkinterUI:
         # ----------------------------------------------- Configure Canvas --------------------------------------------- #
 
     def radioButtonPressed(self):
-        if self.mode.get()==0:
+        if self.drawMode.get()==0:
             makeGraph.makeRootGraph(self.ld, self.dg.selectedNode)
             self.dg.drawRootGraph()
-        elif self.mode.get()==1:
+        elif self.drawMode.get()==1:
             makeGraph.makeNeighborGraph(self.ld, self.dg.selectedNode)
             self.dg.drawNeighborGraph()
-        elif self.mode.get()==3:
+        elif self.drawMode.get()==3:
             self.dg.drawNetworkGraph()
         else:
             self.dg.drawRootGraph()
@@ -177,13 +192,17 @@ class TkinterUI:
     def terminate(self):
         self.ld.event.set()
         self.window.destroy()
-        if not self.isDebug.get() and self.ld.socketConnected : self.ld.sock.close()
+        if not self.isDebug.get() and self.ld.socketConnected :
+            self.ld.sock.close()
+            self.ld.conn.close()
+
     def terminateTop(self):
         self.ld.logfile_name = self.logFileName.get()
         self.top.destroy()
 
     def startButtonPressed(self):
-        if not self.isDebug.get():
+        self.isStarted = True
+        if self.isDebug.get() == False:
             try:
                 serial.Serial(PORT, BAUD_RATE).close()
             except serial.serialutil.SerialException:
@@ -194,21 +213,21 @@ class TkinterUI:
         else:
             serialThread = threading.Thread(target=self.ld.logfile)
             
-        if self.isReset.get():
+        if self.isReset.get() == True:
             try:
                 os.remove(self.logFileName.get())
                 with open(self.logFileName.get(), "w") as f: pass
             except FileNotFoundError:
                 with open(self.logFileName.get(), "w") as f: pass
         serialThread.start()
+        if self.isDebug.get() == False: self.socketThread.start()
         self.statusText.set_text("STARTED")
         self.canvas.draw_idle()
         self.startButton["state"] = "disabled"
-        self.configButton["state"] = "disabled"
+
     def configButtonPressed(self):
         self.top = ttk.Toplevel(self.window)
         self.top.protocol("WM_DELETE_WINDOW", self.terminateTop)
-        self.window.protocol("WM_DELETE_WINDOW", self.terminate)
         self.top.attributes("-topmost", 1)
         self.top.geometry("800x600")
         self.top.title("Configuration")
@@ -227,6 +246,8 @@ class TkinterUI:
         debugging_check = ttk.Checkbutton(self.top, text="Debugging Mode", variable=self.isDebug, onvalue=1, offvalue=0)
         logfile_name_label = ttk.Label(self.top, text="Logfile Name : ")
         logfile_name_input = ttk.Entry(self.top, textvariable=self.logFileName)
+        self.aiCheck = ttk.Radiobutton(self.top, text="AI First", variable=self.aiFirst, value=True, command=self.aiRadioPressed)
+        self.userCheck = ttk.Radiobutton(self.top, text="User First", variable=self.aiFirst, value=False, command=self.aiRadioPressed)
 
         self.contiki_path_input.insert(0, "/home/mckkk119/CNLAB_EV/contiki-ng")
         self.node_cnt_input.insert(0, "4")
@@ -246,11 +267,14 @@ class TkinterUI:
         self.data_cnt_input.place(x=130, y=170, width=260, height=35)
         reset_check.place(x=410, y=10, height=35)
         debugging_check.place(x=550, y=10, height=35)
-        logfile_name_label.place(x=410, y=50)
-        logfile_name_input.place(x=530, y=45, width=260, height=35)
+        logfile_name_label.place(x=410, y=55)
+        logfile_name_input.place(x=530, y=50, width=260, height=35)
+        self.aiCheck.place(x=410, y=90)
+        self.userCheck.place(x=410, y=115)
 
-        uploadButton = tk.Button(self.top, text="Upload to node", command=self.upload)
-        uploadButton.place(x=10, y=215, width=380, height=70)
+
+        self.uploadButton = tk.Button(self.top, text="Upload to node", command=self.upload)
+        self.uploadButton.place(x=10, y=215, width=380, height=70)
 
         self.uploadLog = tk.Listbox(self.top)
         self.uploadLog.place(x=10, y=300, width=760, height=260)
@@ -262,16 +286,25 @@ class TkinterUI:
         vscroll.place(x=770, y=300, width=20, height=260)
         hscroll.place(x=10,y=560, width=760, height=20)
         self.uploadLog.config(xscrollcommand=hscroll.set, yscrollcommand=vscroll.set)
+        if self.isStarted == True:
+            self.contiki_path_input["state"] = "disabled"
+            self.node_cnt_input["state"] = "disabled"
+            node_id_input["state"] = "disabled"
+            node_type_input["state"] = "disabled"
+            reset_check["state"] = "disabled"
+            self.data_cnt_input["state"] = "disabled"
+            debugging_check["state"] = "disabled"
+            logfile_name_input["state"] = "disabled"
+            self.uploadButton["state"] = "disabled"
 
     def upload(self):
-        if not self.isDebug.get():
+        if self.isDebug.get() == False:
             try:
                 serial.Serial(PORT, BAUD_RATE).close()
             except serial.serialutil.SerialException:
                 msgbox.showwarning("ERROR", "Device is not ready.\n or please execute with root permission.")
                 return
-        if self.contiki_path.get()=="" or self.node_cnt.get()=="" \
-            or self.node_id.get()=="" or self.node_type.get()=="" or self.data_cnt.get()=="":
+        if "" in [self.contiki_path.get(), self.node_cnt.get(), self.node_id.get(), self.node_type.get(), self.data_cnt.get()]:
             msgbox.showwarning("ERROR", "Make sure all boxes are filled.")
             return
         if self.node_id.get() > self.node_cnt.get():
@@ -342,45 +375,53 @@ class TkinterUI:
         self.node_cnt_input["state"] = "disabled"
         self.contiki_path_input["state"] = "disabled"
         self.data_cnt_input["state"] = "disabled"
+
     def appendLog(self, line):
         self.uploadLog.insert(tk.END, line)
         self.uploadLog.update()
         self.uploadLog.see(tk.END)
 
+    def aiRadioPressed(self):
+        if self.isStarted == False or \
+            self.ld.NODE_TYPE[self.ld.node_type[self.dg.selectedNode]] not in ["VSENSOR-ACTIVATED", "VSENSOR-DEACTIVATED", "SENSOR"]: return
+        if self.aiFirst.get() == True: self.activateButton["state"] = "disabled"
+        else: self.activateButton["state"] = "normal"
+
     def resetLayoutButtonPressed(self):
         self.ld.neighborPos = nx.spring_layout(self.ld.entireG)
-        if self.mode.get()==0:
+        if self.drawMode.get()==0:
             makeGraph.makeRootGraph(self.ld, self.dg.selectedNode)
             self.dg.drawRootGraph()
-        elif self.mode.get()==1:
+        elif self.drawMode.get()==1:
             makeGraph.makeNeighborGraph(self.ld, self.dg.selectedNode)
             self.dg.drawNeighborGraph()
-        elif self.mode.get()==3:
+        elif self.drawMode.get()==3:
             self.dg.drawNetworkGraph()
         else:
             self.dg.drawRootGraph()
 
-    def activateButtonPressed(self, ai=False):
-        if self.isDebug.get(): 
+    def activateButtonPressed(self, node=1, ai=False):
+        if self.isDebug.get() == True: 
             msgbox.showwarning("ERROR", "Can't use on DEBUG MODE.")
             return
+        if node==1: node = self.dg.selectedNode
         if ai==False:
             yesno_msgbox = msgbox.askquestion("Warning",
-                                          "Are you sure to %s node %d?"%("deactivate" if self.ld.activate[self.dg.selectedNode] else "activate", self.dg.selectedNode))
+                                          "Are you sure to %s node %d?"%("deactivate" if self.ld.activate[node] else "activate", node))
             if yesno_msgbox=="no": return
-        if self.ld.activate[self.dg.selectedNode]:
+        if self.ld.activate[node]:
             self.activateButton["text"] = "Activate Node"
-            self.ld.activate[self.dg.selectedNode] = False
-            self.ld.fd.write(f"VS-OFF {self.dg.selectedNode}".encode()+b"\x7F")
+            self.ld.activate[node] = False
+            self.ld.fd.write(f"VS-OFF {node}".encode()+b"\x7F")
         else:
             self.activateButton["text"] = "Deactivate Node"
-            self.ld.activate[self.dg.selectedNode] = True
-            self.ld.fd.write(f"VS-ON {self.dg.selectedNode}".encode()+b"\x7F")
-        if self.mode.get()==0:
+            self.ld.activate[node] = True
+            self.ld.fd.write(f"VS-ON {node}".encode()+b"\x7F")
+        if self.drawMode.get()==0:
             self.dg.drawRootGraph()
-        elif self.mode.get()==1:
+        elif self.drawMode.get()==1:
             self.dg.drawNeighborGraph()
-        elif self.mode.get()==3:
+        elif self.drawMode.get()==3:
             self.dg.drawNetworkGraph()
         else:
             self.dg.drawRootGraph()

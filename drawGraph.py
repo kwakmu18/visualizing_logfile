@@ -20,7 +20,7 @@ class DrawGraph:
     def releaseEvent(self, event):
         if self.selectedNode==None: return
         if self.ld.NODE_TYPE[self.ld.node_type[self.selectedNode]] in ["VSENSOR-ACTIVATED", "SENSOR"]:
-            self.main.activateButton["state"] = "active"
+            if self.main.aiFirst.get() == False: self.main.activateButton["state"] = "active"
             self.main.prrProgressBar.configure(mask="{}%"+f"({self.ld.prr[self.selectedNode][0]}/{self.ld.prr[self.selectedNode][1]})")
             self.ld.maxSequence.set(int(self.ld.prr[self.selectedNode][0]/self.ld.prr[self.selectedNode][1]*100))
             if self.ld.activate[self.selectedNode]:
@@ -32,10 +32,10 @@ class DrawGraph:
             self.ld.maxSequence.set(0)
             self.main.prrProgressBar.configure(mask="{}%"+f"(0/0)")
         self.main.drawInfo()
-        if self.main.mode.get()==2 or self.main.mode.get()==3: return
+        if self.main.drawMode.get() in [2,3]: return
         if (self.originalX - event.xdata)**2 + (self.originalY - event.ydata)**2 > 0.0005:return
         makeGraph.makeNeighborGraph(self.ld, self.selectedNode)
-        if self.main.mode.get()==0:
+        if self.main.drawMode.get()==0:
             makeGraph.makeRootGraph(self.ld, self.selectedNode)
             self.drawRootGraph()
         else:
@@ -69,7 +69,7 @@ class DrawGraph:
         return
 
     def drawRootGraph(self):
-        G = self.ld.rootG if self.main.mode.get()==0 else self.ld.entireG
+        G = self.ld.rootG if self.main.drawMode.get()==0 else self.ld.entireG
         self.main.fig.canvas.mpl_connect('button_press_event', self.clickEvent)
         self.main.fig.canvas.mpl_connect('button_release_event', self.releaseEvent)
         self.main.ax2.clear()
