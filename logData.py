@@ -138,7 +138,7 @@ class LogData:
             self.main.canvas.draw_idle()
         elif line.find("SF_DL_TS_START")!=-1:
             self.commReady = True
-            if self.socketConnected: self.self.conn.send(b"READY")
+            if self.socketConnected: self.conn.send(b"READY")
         elif line.find("DATA-PACKET")!=-1:
             source = re.search(r"source=\((\d+)\): num-of-data=\((\d+)\)", line)
             self.prr[int(source.group(1))][0] = int(source.group(2))
@@ -194,7 +194,7 @@ class LogData:
             try:
                 server_address = (self.socket_ip, self.socket_port)
                 self.sock.bind(server_address)
-                print(f"Server Address = {server_address}")
+                self.appendLog(self.main.aiLogbox, f"Server Address = {server_address}")
                 break
             except OSError:
                 self.socket_port += 1
@@ -211,19 +211,24 @@ class LogData:
             self.socketConnected = True
             self.appendLog(self.main.aiLogbox, f"{self.client_address} connected")
 
+            data = "temp"
             while True:
                 if self.event.is_set():break
                 try:
                     data = self.conn.recv(1024).decode()
                     print(len(data))
                     if len(data)==0:
-                        self.appendLog(self.main.aiLogbox, self.client_address + " connection closed")
+                        self.appendLog(self.main.aiLogbox, self.client_address[0] + " connection closed")
                         self.socketConnected = False
                         break
                     data = eval(data)
                     index = int(data[0])
                     self.predict = float(data[1])
                     onoff = str(data[2])
+                    if self.commReady==False:continue
+                    if self.main.aiFirst.get()==False:
+                        self.appendLog(self.main.aiLogbox, f"node {index} {onoff}, Ignored(User First Mode)")
+                        continue
                     if False in [self.commReady, self.main.aiFirst.get()]:continue
                     if onoff=="on":
                         self.appendLog(self.main.aiLogbox, f"node {index} ON")
@@ -238,6 +243,6 @@ class LogData:
                     continue
                 except Exception as e:
                     if len(data)==0:
-                        print(self.client_address[0], self.client_address[1], "connection closed")
+                        self.appendLog(self.main.aiLogbox, self.client_address[0] + " connection closed")
                         self.socketConnected = False
                         break
